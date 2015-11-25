@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+	<head>
+	  <title>Python Flask Bucket List App</title>
+	  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}">
+	  <script src="{{ url_for('static', filename='jquery.js') }}"> </script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default height:10vh">
+	    <div class="container-fluid">
+	      <ul class="nav navbar-nav">
+	        <li class="active" name="tab_link" id="tab_1"><a href="#">First Link</a></li>
+	        <li name="tab_link" id="tab_2"><a href="#">Second Link</a></li>
+	        <li class="active" name="tab_link" id="tab_3"><a href="#">Third Link</a></li>
+	        <li><a href="#" name="tab_link" id="tab_4">Fourth Link</a></li>
+	        <li class="active" name="tab_link" id="tab_5"><a href="#">Fifth Link</a></li>
+	      </ul>
+	    </div>
+	  </nav>
+	  <div id="tab_1" name="tab_body">hey</div>
+	  <div id="tab_2" name="tab_body" style="display: none"></div>
+	  <div id="tab_3" name="tab_body" style="display: none"></div>
+	  <div id="tab_4" name="tab_body" style="display: none"></div>
+	  <div id="tab_5" name="tab_body" style="display: none"></div>
+	  <script type="text/javascript">
+	  $('[name=tab_body]').each(function(index){
+	  	console.log(index)
+	  	var id = $(this).attr('id');
+	  	$(this).load('/tab', 'name=' + id)
+	  })
+	  </script>
+	  <script type="text/javascript">
+	  $('[name=tab_link]').click(function(e){
+	  	console.log('clicked');
+	  	var id = $(this).attr('id')
+	  	$('[name=tab_body]').each(function(index){
+	  		if ($(this).attr('id') == id) {
+					$(this).show();	  			
+	  		} else {
+	  			$(this).hide();
+	  		}
+	  	});
+	  })
+	  </script>
+	</body>
+</html>

@@ -1,0 +1,41 @@
+<div>
+  <div style="float:left;width:70%" id="leftSide">
+    <form class="form-inline">
+      <!-- <input type="file"> -->
+      FULL path to folder with mgf files: <input type="text" id="mfgDirPath" style="width:50%">
+      <br>
+      <!-- Things I need here: A dropdown with iTRAQ stuff, etc. -->
+      <!-- I need a thing for each form option, I also need a
+      validator serverside, that doesn't let it process if there's an error. -->
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Email</label>
+        <select class="form-control col-sm-10">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+      </div>
+      <br>
+    </form>
+	  <button id="tab_1_button" class="btn btn-primary">Click to submit Tab 1</button>
+  </div>
+  <div style="float:right;width:30%;height:88vh;border-style:solid;border-width:5px;overflow:scroll;padding:10px" id="rightSide">
+  	<h1>Progress</h1>
+  	<ul>
+  		<li>Yo</li>
+  	</ul>
+  </div>
+  <script>$('#tab_1_button').click(function(e){
+  	console.log("clicked");
+  	$(this).attr('disabled', true);
+  	var that = $(this)
+  	$(this).parent().siblings("#rightSide").each(function(index){
+  		$(this).append("<div>Tab 1</div>");
+  		setTimeout(function(){
+  			console.log('better');
+  			that.attr('disabled',false);
+  		}, 5000);
+  	})
+  })</script>
+</div>

@@ -22,13 +22,13 @@ my $mz_error="";
 my $type="";
 my $min_intensity="";
 my $min_reporters="";
-if ($ARGV[0]=~/\w/) { $dir=$ARGV[0];} else { exit 1}
-if ($ARGV[1]=~/\w/) { $write_dir=$ARGV[1];} else { exit 1}
-if ($ARGV[2]=~/\w/) { $temp_dir=$ARGV[2];} else { exit 1}
-if ($ARGV[3]=~/\w/) { $mz_error=$ARGV[3];} else { exit 1 }
-if ($ARGV[4]=~/\w/) { $type=$ARGV[4];} else { exit 1}
-if ($ARGV[5]=~/\w/) { $min_intensity=$ARGV[5];} else { exit 1}
-if ($ARGV[6]=~/\w/) { $min_reporters=$ARGV[6];} else { exit 1}
+if ($ARGV[0]=~/\w/) { $dir=$ARGV[0];} else { exit 1;}
+if ($ARGV[1]=~/\w/) { $write_dir=$ARGV[1];} else { exit 1;}
+if ($ARGV[2]=~/\w/) { $temp_dir=$ARGV[2];} else { exit 1;}
+if ($ARGV[3]=~/\w/) { $mz_error=$ARGV[3];} else { exit 1;}
+if ($ARGV[4]=~/\w/) { $type=$ARGV[4];} else { exit 1;}
+if ($ARGV[5]=~/\w/) { $min_intensity=$ARGV[5];} else { exit 1;}
+if ($ARGV[6]=~/\w/) { $min_reporters=$ARGV[6];} else { exit 1;}
 
 my @reporters=();
 
@@ -60,8 +60,8 @@ elsif ($type=~/^TMT6OLD$/)
 }
 else
 {
-	print "Error: Have not specified reporter ion properly\n"
-	exit 1
+	print "Error: Have not specified reporter ion properly\n";
+	exit 1;
 }
 
 
@@ -426,7 +426,8 @@ if (opendir(dir,"$dir"))
 			else
 			{
 				print "Could not open \"$dir/$filename\".\n";
-				$error=1;
+				# $error=1;
+				exit 1;
 			}	
 		}
 	}
@@ -491,6 +492,11 @@ if (opendir(dir,"$dir"))
 		close(OUT);
 	}				
 	print "\n$count_spectra spectra selected ($mz_error, $type, $min_intensity, $min_reporters) out of $count_all_spectra in \"merged\".\n";
+}
+else
+{
+	print "Couldn't open directory\n"
+	exit 1;
 }
 
 # if ($type=~/^iTRAQ8$/)

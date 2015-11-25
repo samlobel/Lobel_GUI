@@ -1,0 +1,24 @@
+<div>
+  <div style="float:left;width:70%" id="leftSide">
+	  <button id="tab_3_button" class="btn btn-primary">Click to submit Tab 3</button>
+  </div>
+  <div style="float:right;width:30%;height:88vh;border-style:solid;border-width:5px;overflow:scroll;padding:10px" id="rightSide">
+  	<h1>Progress</h1>
+  	<ul>
+  		<li>Cats</li>
+  	</ul>
+  </div>
+  <script>$('#tab_3_button').click(function(e){
+  	console.log("clicked");
+  	$(this).attr('disabled', true);
+  	var that = $(this)
+  	$(this).parent().siblings("#rightSide").each(function(index){
+  		$(this).append("<div>Tab 3</div>");
+  		setTimeout(function(){
+  			console.log('better');
+  			that.attr('disabled',false);
+  		}, 5000);
+  	})
+  })</script>
+
+</div>
