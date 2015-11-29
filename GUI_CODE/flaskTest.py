@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 app = Flask(__name__)
 from time import time
+from SCRIPTS_FOR_GUI import mgf_select_one
 # from science_code import science
 
 @app.route("/")
@@ -15,6 +16,33 @@ def tab():
 	# print file_name
 	file_name = str(request.args.get('name')) + '.html'
 	return render_template(file_name)
+
+
+@app.route("/tab_1_function", methods=['POST'])
+def tab_1_function():
+	# print request.form
+	# print request.args
+	mgf_read_path = str(request.form['mgfReadPath'])
+	print mgf_read_path
+	mgf_write_path = str(request.form['mgfWritePath'])
+	print mgf_write_path
+	mz_error = str(request.form['mzError']);
+	print mz_error
+	reporter_type = str(request.form['reporterType'])
+	print reporter_type
+	min_reporters = str(request.form['minReporters'])
+	print min_reporters
+	min_intensity = str(request.form['minIntensity'])
+	print min_intensity
+	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mz_error, reporter_type, min_intensity, min_reporters)
+	print "ERROR " + str(error)
+
+
+	# a = mgf_select_one.test_drive()
+
+	# print "From test drive:" + a
+	
+	return "LOOKS GOOD HOMIE"
 
 
 @app.route("/submitForm", methods=['POST'])
