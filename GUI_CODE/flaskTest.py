@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 from time import time
 from SCRIPTS_FOR_GUI import mgf_select_one
+from SCRIPTS_FOR_GUI import helper
+import json
 # from science_code import science
 
 @app.route("/")
@@ -43,6 +45,19 @@ def tab_1_function():
 	# print "From test drive:" + a
 	
 	return "LOOKS GOOD HOMIE"
+
+
+@app.route("/getMGFFiles", methods=['POST'])
+def getMGFFiles():
+	print "GET MGF FILES"
+	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
+	print "Got past read dir path"
+	files = helper.get_mgf_files_given_directory(mgf_read_dir_path)
+	print "Files"
+	print files
+	text = json.dumps(files)
+	return text
+
 
 
 @app.route("/submitForm", methods=['POST'])

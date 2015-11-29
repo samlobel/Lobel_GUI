@@ -1,4 +1,4 @@
-<div>
+<!-- <div>
   <div style="float:left;width:70%" id="leftSide">
   	<button id="tab_2_button" class="btn btn-primary">Click to submit Tab 2</button>
   </div>
@@ -20,4 +20,170 @@
   		}, 5000);
   	})
   })</script>
+</div> -->
+
+
+<div>
+  <div style="float:left;width:60%" id="leftSide">
+    <h2 style="margin:1%">SELECT FROM ALL MGF FILES IN FOLDER</h2>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
+      <input type="text" class="form-control" id="mgfReadDirPath">
+    </div>
+      <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">FULL PATH to directory where you WRITE the selected files</span>
+      <input type="text" class="form-control" id="mgfWriteDirPath">
+    </div>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">&nbspmz_error (enter an integer) &nbsp</span>
+      <input type="text" class="form-control" id="mz_error">
+    </div>
+    <div class="input-group" style="margin: 1%">
+      <!-- <input type="text" class="form-control" placeholder="yo"> -->
+      <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
+      <select class='form-control' id="reporter_ion_type">
+        <option value="iTRAQ4">iTRAQ4</option>
+        <option value="iTRAQ8">iTRAQ8</option>
+        <option value="TMT10">TMT10</option>
+      </select>
+    </div>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
+      <input type="text" class="form-control" id="min_intensity">
+    </div>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">Minimum Reporters with said intensity</span>
+      <input type="text" class="form-control" id="min_reporters">
+    </div>
+    <br>
+    <button id="tab_2_button" class="btn btn-primary">Click to submit Tab 2</button>
+  </div>
+  <div style="float:right;width:30%;height:88vh;border-style:solid;border-width:5px;overflow:scroll;padding:10px" id="rightSide">
+    <h1>Progress</h1>
+    <ul>
+      <li>Yo</li>
+    </ul>
+  </div>
+  <script>
+  $('#tab_2_button').click(function(e){
+    console.log("clicked");
+    $(this).attr('disabled', true);
+    var that = $(this);
+    var leftSide = that.parent();
+    var mgfReadDirPath = leftSide.find("#mgfReadDirPath").first().val();
+    if (mgfReadDirPath[mgfReadDirPath.length - 1] != "/"){
+      mgfReadDirPath = mgfReadDirPath + "/";
+    }
+    var mgfWriteDirPath = leftSide.find("#mgfWriteDirPath").first().val();
+    if (mgfWriteDirPath[mgfWriteDirPath.length - 1] != "/"){
+      mgfWriteDirPath = mgfWriteDirPath + "/";
+    }
+    var mzError = leftSide.find("#mz_error").first().val();
+    var reporterType = leftSide.find("#reporter_ion_type").first().val();
+    var minReporters = leftSide.find("#min_reporters").first().val();
+    var minIntensity = leftSide.find("#min_intensity").first().val();
+    console.log(mgfReadDirPath);
+    console.log(mgfWriteDirPath);
+    var rightSide = $(this).parent().siblings("#rightSide").first()
+    rightSide.append("<div>Executing Function Now</div>")
+
+    async.waterfall([
+      function(callback){
+        console.log("inside of first waterfaller");
+        $.ajax({
+          type : "POST",
+          url : "getMGFFiles",
+          data: {mgfReadDirPath : mgfReadDirPath},
+          success : function(result){
+            console.log('success');
+            console.log(result);
+            // $(this).attr('disabled', false);
+            return callback(null, result)
+          },
+          error: function(something, textStatus, HTTPError){
+            console.log('error');
+            callback({err : "ERROR IN PASSING BACK FILE NAMES"});
+            if (textStatus){
+              console.log(something);
+              return alert("textStatus: " + textStatus);
+            }
+            if (HTTPError){
+              console.log(something);
+              return alert("HTTPError: " + HTTPError);
+            }
+          }
+        })
+      },
+      function(fileArray, callback){
+        if (!fileArray){
+          return callback("No fileArray");
+        }
+        if (typeof fileArray == 'string'){
+          console.log("FileArray needs to be parsed");
+          fileArray = JSON.parse(fileArray);
+        }
+        if (!fileArray.length){
+          rightSide.append("<div>NO FILES TO WRITE!</div>")
+          return callback({err : "NO FILES TO WRITE"})
+        }
+        async.eachSeries(fileArray, function(elem, next){
+          var mgfReadPath = mgfReadDirPath + elem;
+          var mgfWritePath = mgfWriteDirPath + elem;
+          console.log(mgfReadPath);
+          // return next(null);
+          var data = {
+            mgfReadPath : mgfReadPath,
+            mgfWritePath : mgfWritePath,
+            mzError : mzError,
+            reporterType : reporterType,
+            minReporters : minReporters,
+            minIntensity : minIntensity
+          }
+          console.log("Parsing file");
+          rightSide.append("<div>Began selecting from file " + elem + "</div>");
+
+          $.ajax({
+            type:"POST",
+            url:"tab_1_function",
+            data : data,
+            // dataType : 'json',
+            // contentType: "application/json",
+            success : function(result){
+              console.log(result);
+              rightSide.append("<div>Finished Selecting from file " + elem + "</div>");
+              // that.attr('disabled',false);
+              return next(null)
+              // alert("Completed Successfully");
+            },
+            error: function(something, textStatus, HTTPError){
+              return next("ERROR IN EACHSERIES");
+            }
+          });
+        }, function(err){
+          callback(err);
+        })
+      }
+    ],
+    function(err, result){
+      // if (err){console.log(err)}
+      // if(result){console.log(result)}
+      console.log("in final waterfall catcher");
+      if (err && err.err && err.err == "NO FILES TO WRITE"){return;}
+      console.log(err);
+    })
+  })
+
+  //   that.attr('disabled',false);
+  //   return;
+
+  //   $(this).parent().siblings("#rightSide").each(function(index){
+  //     $(this).append("<div>Tab 1</div>");
+  //     setTimeout(function(){
+  //       console.log('better');
+  //       that.attr('disabled',false);
+  //     }, 5000);
+  //   })
+  // });
+  </script>
+
 </div>
