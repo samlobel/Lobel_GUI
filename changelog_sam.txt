@@ -23,6 +23,7 @@ I'm going to change it so that you can put the script in a folder with the inver
 TO DO: I JUST MOVED EVERYTHING TO A FOLDER CALLED ISOBARIC_EXECUTABLES, NOW I NEED TO ADD THAT TO THE PATH.	
 
 
+
 TEST: for TMT0, run and see if the index stops, because it's from 126 to 126.
 
 Check TMT10 inverse matrix, because sometimes dads make mistakes.
@@ -151,6 +152,10 @@ If there are two things with same scan, same charge, different log(e), then we w
 
 We want to make a note in each if there was a duplicate scan number in the same file.
 
+Make a checkbox that asks whether you'd like to merge them at the end as well.
+Make everything directory-agnostic.
+
+I also want to switch things to join from appending '/', because that's not very directory agnostic.
 
 
 
