@@ -52,6 +52,8 @@ def tab_2_helper_function():
 	print mgf_file_name
 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
 	print mgf_read_path
+	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+	print mgf_write_path
 	mz_error = str(request.form['mzError']);
 	print mz_error
 	reporter_type = str(request.form['reporterType'])
