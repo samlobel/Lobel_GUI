@@ -18,7 +18,3 @@ def concat_mgf_files_given_dirname(output_filename, input_directory_name):
 	# return filenames
 	concat_mgf_files(output_filename, filenames)
 
-
-
-# concat_mgf_files_given_dirname("/Users/samlobel/concatenated.txt", "/Users/samlobel")
-
