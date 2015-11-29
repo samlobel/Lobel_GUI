@@ -4,6 +4,7 @@ from time import time
 from SCRIPTS_FOR_GUI import mgf_select_one
 from SCRIPTS_FOR_GUI import helper
 import json
+from os.path import join
 # from science_code import science
 
 @app.route("/")
@@ -18,6 +19,7 @@ def tab():
 	# print file_name
 	file_name = str(request.args.get('name')) + '.html'
 	return render_template(file_name)
+
 
 
 @app.route("/tab_1_function", methods=['POST'])
@@ -38,6 +40,27 @@ def tab_1_function():
 	print min_intensity
 	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mz_error, reporter_type, min_intensity, min_reporters)
 	print "ERROR " + str(error)
+
+
+@app.route("/tab_2_helper_function", methods=['POST'])
+def tab_2_helper_function():
+	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
+	print mgf_read_dir_path
+	mgf_write_dir_path = str(request.form['mgfWriteDirPath'])
+	print mgf_write_dir_path
+	mgf_file_name = str(request.form['mgfFileName'])
+	print mgf_file_name
+	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
+	print mgf_read_path
+	mz_error = str(request.form['mzError']);
+	print mz_error
+	reporter_type = str(request.form['reporterType'])
+	print reporter_type
+	min_reporters = str(request.form['minReporters'])
+	print min_reporters
+	min_intensity = str(request.form['minIntensity'])
+	print min_intensity
+	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mz_error, reporter_type, min_intensity, min_reporters)
 
 
 	# a = mgf_select_one.test_drive()

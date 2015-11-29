@@ -71,13 +71,7 @@
     var that = $(this);
     var leftSide = that.parent();
     var mgfReadDirPath = leftSide.find("#mgfReadDirPath").first().val();
-    if (mgfReadDirPath[mgfReadDirPath.length - 1] != "/"){
-      mgfReadDirPath = mgfReadDirPath + "/";
-    }
     var mgfWriteDirPath = leftSide.find("#mgfWriteDirPath").first().val();
-    if (mgfWriteDirPath[mgfWriteDirPath.length - 1] != "/"){
-      mgfWriteDirPath = mgfWriteDirPath + "/";
-    }
     var mzError = leftSide.find("#mz_error").first().val();
     var reporterType = leftSide.find("#reporter_ion_type").first().val();
     var minReporters = leftSide.find("#min_reporters").first().val();
@@ -127,13 +121,14 @@
           return callback({err : "NO FILES TO WRITE"})
         }
         async.eachSeries(fileArray, function(elem, next){
-          var mgfReadPath = mgfReadDirPath + elem;
-          var mgfWritePath = mgfWriteDirPath + elem;
+          // var mgfReadPath = mgfReadDirPath + elem;
+          // var mgfWritePath = mgfWriteDirPath + elem;
           console.log(mgfReadPath);
           // return next(null);
           var data = {
-            mgfReadPath : mgfReadPath,
-            mgfWritePath : mgfWritePath,
+            mgfReadDirPath : mgfReadDirPath,
+            mgfWriteDirPath : mgfWriteDirPath,
+            mgfFileName : elem,
             mzError : mzError,
             reporterType : reporterType,
             minReporters : minReporters,
@@ -144,7 +139,7 @@
 
           $.ajax({
             type:"POST",
-            url:"tab_1_function",
+            url:"tab_2_helper_function",
             data : data,
             // dataType : 'json',
             // contentType: "application/json",
