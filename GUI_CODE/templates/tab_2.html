@@ -165,6 +165,10 @@
       console.log("in final waterfall catcher");
       if (err && err.err && err.err == "NO FILES TO WRITE"){return;}
       console.log(err);
+      if (err){
+        alert(err)
+      }
+      that.attr('disabled',false);
     })
   })
 
