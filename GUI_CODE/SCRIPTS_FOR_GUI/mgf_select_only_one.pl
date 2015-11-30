@@ -11,11 +11,10 @@ use File::Basename;
 # THE FIFTH IS min_intensity
 # The sixth is min_reporters
 
-
 # my $error=0;
 my $read_file_path="";
 my $write_file_path="";
-my $mz_error="";
+my $mz_error="";	
 my $type="";
 my $parsed_filename="";
 my $min_intensity="";

@@ -5,6 +5,7 @@ from SCRIPTS_FOR_GUI import mgf_select_one
 from SCRIPTS_FOR_GUI import helper
 import json
 from os.path import join
+from SCRIPTS_FOR_GUI import combine_selected_mgf_files
 # from science_code import science
 
 @app.route("/")
@@ -19,6 +20,23 @@ def tab():
 	# print file_name
 	file_name = str(request.args.get('name')) + '.html'
 	return render_template(file_name)
+
+
+@app.route("/combine_mgf_files", methods=['POST'])
+def combine_mgf_files():
+	print "combine_mgf_files"
+	mgf_read_path = str(request.form['mgfWriteDirPath'])
+	mgf_write_path = join(mgf_read_path, "MERGED.mgf")
+	combine_selected_mgf_files.concat_mgf_files_given_dirname(mgf_write_path, mgf_read_path)
+	return "GOOD JOB DOOD"
+	
+@app.route("/combine_mgf_txt_files", methods=['POST'])
+def combine_mgf_txt_files():
+	print "combine_mgf_txt_files"
+	mgf_read_path = str(request.form['mgfWriteDirPath'])
+	mgf_write_path = join(mgf_read_path, "MERGED.mgf.txt")
+	combine_selected_mgf_files.concat_mgf_txt_files_given_dirname(mgf_write_path, mgf_read_path)
+	return "GOOD JOB DOOD"
 
 
 

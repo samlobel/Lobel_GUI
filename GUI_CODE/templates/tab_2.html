@@ -122,7 +122,7 @@
         async.eachSeries(fileArray, function(elem, next){
           // var mgfReadPath = mgfReadDirPath + elem;
           // var mgfWritePath = mgfWriteDirPath + elem;
-          console.log(mgfReadPath);
+          // console.log(mgfReadPath);
           // return next(null);
           var data = {
             mgfReadDirPath : mgfReadDirPath,
@@ -156,6 +156,36 @@
         }, function(err){
           callback(err);
         })
+      },
+      function(callback){
+        $.ajax({
+          type:"POST",
+          url:"combine_mgf_files",
+          data : {mgfWriteDirPath : mgfWriteDirPath},
+          success : function(result){
+            console.log(result);
+            rightSide.append("<div>MERGED MGF FILES</div>");
+            return callback(null);
+          },
+          error: function(something, textStatus, HTTPError){
+            return callback("ERROR IN combine_mgf_files");
+          }
+        });
+      },
+      function(callback){
+        $.ajax({
+          type:"POST",
+          url:"combine_mgf_txt_files",
+          data : {mgfWriteDirPath : mgfWriteDirPath},
+          success : function(result){
+            console.log(result);
+            rightSide.append("<div>MERGED MGF.TXT FILES</div>");
+            return callback(null);
+          },
+          error: function(something, textStatus, HTTPError){
+            return callback("ERROR IN combine_mgf_files");
+          }
+        });
       }
     ],
     function(err, result){
