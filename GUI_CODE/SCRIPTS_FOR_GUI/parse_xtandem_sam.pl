@@ -1,9 +1,11 @@
 #!c:/perl/bin/perl.exe
 #
 
+# SOMETHING TO NOTE: NOW I'M USING THE FULL PATHS.
+
 use strict;
 
-# my $error=0;
+my $error=0;
 my $xmlfile=0;
 my $threshold=0;
 my $proton_mass=1.007276;
@@ -32,6 +34,10 @@ if ($error==0)
 			}
 		}
 		close(IN);
+	}
+	else
+	{
+		exit 1;
 	}
 	#print qq!###$genes{"ENSRNOP00000019021"}###\n!;
 	open (IN,qq!$xmlfile!) || die "Could not open $xmlfile\n";

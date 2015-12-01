@@ -6,6 +6,7 @@ from SCRIPTS_FOR_GUI import helper
 import json
 from os.path import join
 from SCRIPTS_FOR_GUI import combine_selected_mgf_files
+from SCRIPTS_FOR_GUI import call_xml_parser
 # from science_code import science
 
 @app.route("/")
@@ -88,6 +89,25 @@ def tab_2_helper_function():
 	# print "From test drive:" + a
 	
 	return "LOOKS GOOD HOMIE"
+
+@app.route("/tab_3_function", methods=['POST'])
+def tab_3_function():
+	print "HANDLE TAB 3"
+	xml_read_path = str(request.form['xmlReadPath'])
+	print xml_read_path
+	threshold = int(request.form['threshold'])
+	threshold = str(round(threshold / 100.0, 2))
+	print threshold
+	labelMass = str(request.form['labelMass'])
+	print labelMass
+	geneFile = str(request.form['geneFile'])
+	print geneFile
+	# return "Looking Good"
+	a = call_xml_parser.parse_xtandem(xml_read_path, threshold, labelMass, geneFile)
+	to_return =  "Return from parse_xtandem: " + str(a)
+	print to_return
+	return to_return
+
 
 
 @app.route("/getMGFFiles", methods=['POST'])
