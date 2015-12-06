@@ -17,6 +17,11 @@
       <!-- <input type="text" class="form-control" placeholder="yo"> -->
       <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
       <select class='form-control' id="reporter_ion_type">
+        {% if inverse_files %}
+          {% for f in inverse_files %}
+            <option value={{f}}>{{f.rpartition('-inv.txt')[0]}}</option>
+          {% endfor %}
+        {% endif %}
         <option value="iTRAQ4">iTRAQ4</option>
         <option value="iTRAQ8">iTRAQ8</option>
         <option value="TMT10">TMT10</option>
@@ -68,8 +73,7 @@
             // $(this).attr('disabled', false);
             return callback(null, result)
           },
-          error: function(something, textStatus, HTTPError){
-            console.log('error');
+          error: function(response, textStatus, HTTPError){
             callback({err : "ERROR IN PASSING BACK FILE NAMES"});
             if (textStatus){
               console.log(something);
@@ -124,8 +128,11 @@
               return next(null)
               // alert("Completed Successfully");
             },
-            error: function(something, textStatus, HTTPError){
-              return next("ERROR IN EACHSERIES");
+            error: function(response, textStatus, HTTPError){
+              var responseText = (response && response.responseText) ?
+                response.responseText : "ERROR IN EACHSERIES";
+                rightSide.append('<div style="color:red">' + responseText + '</div>')
+              return next(responseText);
             }
           });
         }, function(err){

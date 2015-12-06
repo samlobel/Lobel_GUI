@@ -520,7 +520,7 @@ if error==0:
 
 
 
-def combine_xml_mgf(selected_mgfdir, xmldir, threshold, mz_error, reporter_ion_type, min_intensity, min_reporters, genefile):
+def combine_parsed_xml_mgf(selected_mgfdir, xmldir, threshold, mz_error, reporter_ion_type, min_intensity, min_reporters, genefile):
 	this_dir = os.path.dirname(os.path.realpath(__file__))
 	if reporter_ion_type=='iTRAQ8':
 		start_col=reporter_ion_type+'-113'

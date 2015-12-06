@@ -16,11 +16,11 @@
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">GENE FILE</span>
       <select class='form-control' id="geneFile">
-      {% if gene_files %}
-        {% for f in gene_files %}
-          <option value={{f}}>{{f.rpartition('.')[0]}}</option>
-        {% endfor %}
-      {% endif %}
+        {% if gene_files %}
+          {% for f in gene_files %}
+            <option value={{f}}>{{f.rpartition('.')[0]}}</option>
+          {% endfor %}
+        {% endif %}
       </select>
     </div>
     <br>
@@ -65,25 +65,15 @@
         that.attr('disabled',false);
         alert("Completed Successfully");
       },
-      error: function(something, textStatus, HTTPError){
-        if (textStatus){
-          alert("textStatus: " + textStatus);
-        }
-        if (HTTPError){
-          alert("HTTPError: " + HTTPError);
-        }
+      error: function(response, textStatus, HTTPError){
+
+        var errorText = (response && response.responseText ? response.responseText : "ERROR in XML_PARSER");
+        rightSide.append('<div style="color:red">' + errorText + '</div>');
+        alert("ERROR: " + errorText);
       }
     })
 
     return;
-
-    $(this).parent().siblings("#rightSide").each(function(index){
-      $(this).append("<div>Tab 3</div>");
-      setTimeout(function(){
-        console.log('better');
-        that.attr('disabled',false);
-      }, 5000);
-    })
   });
   </script>
 
