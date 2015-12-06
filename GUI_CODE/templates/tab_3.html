@@ -16,9 +16,11 @@
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">GENE FILE</span>
       <select class='form-control' id="geneFile">
-        <option value="RAT75_PTGN.txt">RAT75_PTGN</option>
-        <option value="H76GRCh38_PTGN.txt">H76GRCh38_PTGN</option>
-        <option value="Human_genes_PTGN.txt">Human_genes_PTGN</option>
+      {% if gene_files %}
+        {% for f in gene_files %}
+          <option value={{f}}>{{f.rpartition('.')[0]}}</option>
+        {% endfor %}
+      {% endif %}
       </select>
     </div>
     <br>

@@ -7,6 +7,7 @@ import json
 from os.path import join
 from SCRIPTS_FOR_GUI import combine_selected_mgf_files
 from SCRIPTS_FOR_GUI import call_xml_parser
+import os
 # from science_code import science
 
 @app.route("/")
@@ -20,14 +21,29 @@ def tab():
 	# file_name = "tab_" + str(tab_num) + ".html"
 	# print file_name
 	file_name = str(request.args.get('name')) + '.html'
-	return render_template(file_name)
+	print "fetching gene_files"
+	gene_files = helper.get_gene_files_array()
+	# print gene_files
+	return render_template(file_name, gene_files=gene_files)
 
 
 @app.route("/combine_mgf_files", methods=['POST'])
 def combine_mgf_files():
 	print "combine_mgf_files"
 	mgf_read_path = str(request.form['mgfWriteDirPath'])
-	mgf_write_path = join(mgf_read_path, "MERGED.mgf")
+	merged_dir = join(mgf_read_path, "MERGED")
+	print merged_dir
+
+	if not os.path.exists(merged_dir):
+		print "Going to make a directory now"
+		os.mkdir(merged_dir)
+		print "Directory Made"
+	else:
+		print "Path exists already?"
+
+	mgf_write_path = join(merged_dir, "MERGED.mgf")
+
+	print "MGFWRITEPATH: " + str(mgf_write_path)
 	combine_selected_mgf_files.concat_mgf_files_given_dirname(mgf_write_path, mgf_read_path)
 	return "GOOD JOB DOOD"
 	
@@ -35,7 +51,12 @@ def combine_mgf_files():
 def combine_mgf_txt_files():
 	print "combine_mgf_txt_files"
 	mgf_read_path = str(request.form['mgfWriteDirPath'])
-	mgf_write_path = join(mgf_read_path, "MERGED.mgf.txt")
+	merged_dir = join(mgf_read_path, "MERGED")
+	print merged_dir
+	if not os.path.exists(merged_dir):
+		os.mkdir(merged_dir)
+
+	mgf_write_path = join(merged_dir, "MERGED.mgf.txt")
 	combine_selected_mgf_files.concat_mgf_txt_files_given_dirname(mgf_write_path, mgf_read_path)
 	return "GOOD JOB DOOD"
 
