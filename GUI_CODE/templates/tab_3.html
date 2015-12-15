@@ -44,8 +44,8 @@
     var geneFile = leftSide.find("#geneFile").first().val().trim();
     // var minReporters = leftSide.find("#min_reporters").first().val().trim();
     // var minIntensity = leftSide.find("#min_intensity").first().val().trim();
-    console.log(mgfReadPath);
-    console.log(mgfWritePath);
+    // console.log(mgfReadPath);
+    // console.log(mgfWritePath);
     // leftSide.siblings("#rightSide")
     var data = {
       xmlReadPath : xmlReadPath,
@@ -62,7 +62,7 @@
       success : function(result){
         console.log(result);
         rightSide.append("<div>Executed Successfully</div>")
-        that.attr('disabled',false);
+        that.attr('disabled', false);
         alert("Completed Successfully");
       },
       error: function(response, textStatus, HTTPError){

@@ -101,7 +101,7 @@ def tab_2_helper_function():
 	# print mgf_write_dir_path
 	if not os.path.isdir(mgf_write_dir_path):
 		return "mgf write directory path is not a directory", 500
-	mgf_file_name = str(request.form['mgfFileName'])	
+	mgf_file_name = str(request.form['mgfFileName'])
 	print mgf_file_name
 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
 	if not os.path.isfile(mgf_read_path):
@@ -140,7 +140,6 @@ def tab_3_function():
 	except ValueError:
 		print "bad threshold value"
 		return "ERROR: Bad Threshold Value", 500
-	# print threshold
 	try:
 		labelMass = str(int(request.form['labelMass']))
 	except ValueError:
@@ -158,7 +157,25 @@ def tab_3_function():
 @app.route("/combine_parsed_xml_with_parsed_mgf", methods=["POST"])
 def combine_parsed_xml_with_parsed_mgf():
 	print "COMBINING PARSED XML WITH PARSED MGF"
-	return "Badabadabing"
+	mgf_selected_path = request.form['mgfSelectedPath']
+	if not mgf_selected_path:
+		return "Error: mgf_selected_path is required", 500
+	if not os.path.isdir(mgf_selected_path):
+		return "Error: mgf_selected_path is not a directory", 500
+	xml_directory_path = request.form['xmlDirectoryPath']
+	if not xml_directory_path:
+		return "Error: xml_directory_path is required", 500
+	if not os.path.isdir(xml_directory_path):
+		return "Error: mgf_selected_path is not an existing directory", 500
+	reporter_type = request.form['reporterIonType']
+	if not reporter_type:
+		return "Error: No reporter-type specified", 500
+	print "All good so far"
+	a = combine_xml_mgf.combine_parsed_xml_mgf(mgf_selected_path, xml_directory_path, reporter_type)
+	if a:
+		print a
+		return a, 500
+	return "Looking good"
 
 
 
@@ -195,7 +212,6 @@ def secondSubmit():
 
 
 def validate_directory(dirname):
-	# validate directory here
 	pass
 
 def validate_ion_type(ion_type):

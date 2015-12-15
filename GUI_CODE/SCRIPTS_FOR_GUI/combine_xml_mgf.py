@@ -533,82 +533,97 @@ def remove_log_e_duplicates(filename):
 # 											 											 											#
 #####################################################################
 
-def combine_parsed_xml_mgf(selected_mgfdir, xmldir, threshold, mz_error, reporter_ion_type, min_intensity, min_reporters, genefile):
-	this_dir = os.path.dirname(os.path.realpath(__file__))
-	if reporter_ion_type=='iTRAQ8':
-		start_col=reporter_ion_type+'-113'
-		end_col=reporter_ion_type+'-121'
-		label_mass_int=304
-	elif reporter_ion_type=='iTRAQ4':
-		start_col=reporter_ion_type+'-114'
-		end_col=reporter_ion_type+'-117'
-		label_mass_int=144
-	elif reporter_ion_type=='TMT10':
-		start_col=reporter_ion_type+'-126'
-		end_col=reporter_ion_type+'-131'
-		label_mass_int=229
-	else:
-		raise Exception("Invalid reporter_ion_type")
+def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
+	try:
+		this_dir = os.path.dirname(os.path.realpath(__file__))
+		if reporter_ion_type=='iTRAQ4':
+			start_col=reporter_ion_type+'-114'
+			end_col=reporter_ion_type+'-117'
+			label_mass_int=144
+		elif reporter_ion_type=='iTRAQ8':
+			start_col=reporter_ion_type+'-113'
+			end_col=reporter_ion_type+'-121'
+			label_mass_int=304
+		elif reporter_ion_type=='TMT0':
+			start_col=type+'-126'
+			end_col=type+'-126'
+			label_mass_int=225
+		elif reporter_ion_type=='TMT2':
+			start_col=type+'-126'
+			end_col=type+'-127'
+			label_mass_int=225
+		elif reporter_ion_type=='TMT6':
+			start_col=type+'-126'
+			end_col=type+'-131'
+			label_mass_int=229
+		elif reporter_ion_type=='TMT10':
+			start_col=reporter_ion_type+'-126'
+			end_col=reporter_ion_type+'-131'
+			label_mass_int=229
+		else:
+			return "BAD REPORTER ION TYPE"
 
-	corr_path = join(this_dir, reporter_ion_type + "-inv.txt")
-	if not os.path.isfile(corr_path):
-		raise Exception("Cannot find correlation inverse matrix")
-	corr = pd.read_table(corr_path)
-	corr=corr.drop('Unnamed: 0', axis=1)
-	# xmldir,sep,ext = xmlfile.rpartition('.')
+		corr_path = join(this_dir, "inverse_files", reporter_ion_type + "-inv.txt")
+		if not os.path.isfile(corr_path):
+			return "Cannot find inverse file"
+		corr = pd.read_table(corr_path)
+		corr=corr.drop('Unnamed: 0', axis=1)
+		# xmldir,sep,ext = xmlfile.rpartition('.')
 
-	xmldir = join(xmldir,"")
+		xmldir = join(xmldir,"")
 
-	for filename in os.listdir(xmldir):
-		if filename.endswith('.mgf.txt'):
-			print filename
-			xml_filename = join(xmldir, filename)
-			mgf_txt_filename = join(selected_mgfdir, filename)
-			xml = pd.read_table(xml_filename, index_col=['filename','scan','charge'])
-			mgf = pd.read_table(mgf_txt_filename, index_col=['filename','scan','charge'])			
-			mgf.sort_index()
-			testing_filename = mgffilename.split('.mgf.txt')[0] + '_duplicate_sorted' + '.mgf.txt'
-			mgf.to_csv(testing_filename, sep='\t')
-			add_a_or_b_label_to_sorted_mfg_txt_file(testing_filename)
-			mgf = pd.read_table(testing_filename, index_col=['filename','scan','charge'])
-
-			dfc=pd.merge(mgf,xml, left_index=True, right_index=True)
-			dfc_=dfc.dropna()
-			csv_filename = xmldir + '/' + filename + '_nocal_' + str(mz_error) + '_table.txt'
-			print "Writing to " + str(csv_filename)
-			dfc_.to_csv(csv_filename,sep='\t')
-
-			data = pd.read_table(xmldir + '/' + filename + '_nocal_' + str(mz_error) + '_table.txt')
-			for k in range(len(data)):
-				#print k,len(data),start_col,end_col,data
-				#print data.ix[k,start_col:end_col]
-				
-				# this next line gets the kth row, and the start_col to end_col columns, which are strings like iTRAQ-115.
-				
-				temp=np.dot(data.ix[k,start_col:end_col].values,corr.values)
-				# print "data: " + str(data.ix[k,start_col:end_col].values)
-				# print "temp: " + str(temp)
-				# print "corr: " + str(corr.values)
-				temp=temp.astype(float)
-				temp[temp<0]=0
-				temp/=sum(temp)
-
-				data.ix[k,start_col:end_col]=temp
-			data.to_csv(xmldir + '/' + filename + '_nocal_table_corrected.txt',sep='\t',index=False)
-
-	first=1
-	outfile_name = xmldir + '_nocal_' + str(mz_error) + '_table.txt'
-	# os.remove(outfile_name) # there were errors before because it was appending instead of overwriting.
-	with open(outfile_name, 'w') as outfile:
 		for filename in os.listdir(xmldir):
-			if filename.endswith('_nocal_' + str(mz_error) + '_table_corrected.txt'):
-				with open(xmldir + '/' + filename) as infile:
-					for line in infile:
-						if (not 'other proteins' in line) or (first==1):
-							first=0
-							outfile.write(line)
-	add_c_labels_to_duplicate_marker_column(outfile_name)
-	print "Done!"
+			if filename.endswith('.mgf.txt'):
+				print filename
+				xml_filename = join(xmldir, filename)
+				mgf_txt_filename = join(selected_mgfdir, filename)
+				xml = pd.read_table(xml_filename, index_col=['filename','scan','charge'])
+				mgf = pd.read_table(mgf_txt_filename, index_col=['filename','scan','charge'])
+				mgf.sort_index()
+				testing_filename = mgffilename.split('.mgf.txt')[0] + '_duplicate_sorted' + '.mgf.txt'
+				mgf.to_csv(testing_filename, sep='\t')
+				add_a_or_b_label_to_sorted_mfg_txt_file(testing_filename)
+				mgf = pd.read_table(testing_filename, index_col=['filename','scan','charge'])
+				dfc=pd.merge(mgf,xml, left_index=True, right_index=True)
+				dfc_=dfc.dropna()
+				csv_filename = join(xmldir, filename + '_nocal_' + str(mz_error) + '_table.txt')
+				print "Writing to " + str(csv_filename)
+				dfc_.to_csv(csv_filename,sep='\t')
+
+				data = pd.read_table(csv_filename)
+				for k in range(len(data)):
+					#print k,len(data),start_col,end_col,data
+					#print data.ix[k,start_col:end_col]
+					
+					# this next line gets the kth row, and the start_col to end_col columns, which are strings like iTRAQ-115.
+					
+					temp=np.dot(data.ix[k,start_col:end_col].values,corr.values)
+					# print "data: " + str(data.ix[k,start_col:end_col].values)
+					# print "temp: " + str(temp)
+					# print "corr: " + str(corr.values)
+					temp=temp.astype(float)
+					temp[temp<0]=0
+					temp/=sum(temp)
+					data.ix[k,start_col:end_col]=temp
+				this_filename = join(xmldir, filename + '_nocal_table_corrected.txt')
+				data.to_csv(this_filename,sep='\t',index=False)
+
+		first=1
+		outfile_name = join(xmldir, 'MERGED_nocal_' + str(mz_error) + '_table.txt')
+		with open(outfile_name, 'w') as outfile:
+			for filename in os.listdir(xmldir):
+				if filename.endswith('_nocal_' + str(mz_error) + '_table_corrected.txt'):
+					with open(join(xmldir, filename)) as infile:
+						for line in infile:
+							if (not 'other proteins' in line) or (first==1):
+								first = 0
+								outfile.write(line)
+		add_c_labels_to_duplicate_marker_column(outfile_name)
+		print "Done!"
+		return
+	except:
+		return "Error combining xml and mgf"
+
 
 
 

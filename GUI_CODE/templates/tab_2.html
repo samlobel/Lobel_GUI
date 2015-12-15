@@ -19,12 +19,12 @@
       <select class='form-control' id="reporter_ion_type">
         {% if inverse_files %}
           {% for f in inverse_files %}
-            <option value={{f}}>{{f.rpartition('-inv.txt')[0]}}</option>
+            <option value={{f.rpartition('-inv.txt')[0]}}>{{f.rpartition('-inv.txt')[0]}}</option>
           {% endfor %}
         {% endif %}
-        <option value="iTRAQ4">iTRAQ4</option>
+        <!-- <option value="iTRAQ4">iTRAQ4</option>
         <option value="iTRAQ8">iTRAQ8</option>
-        <option value="TMT10">TMT10</option>
+        <option value="TMT10">TMT10</option> -->
       </select>
     </div>
     <div class="input-group" style="margin: 1%">
@@ -59,7 +59,7 @@
     console.log(mgfWriteDirPath);
     var rightSide = $(this).parent().siblings("#rightSide").first()
     rightSide.append("<div>Executing Function Now</div>")
-
+    var startTime = new Date();
     async.waterfall([
       function(callback){
         console.log("inside of first waterfaller");
@@ -76,11 +76,11 @@
           error: function(response, textStatus, HTTPError){
             callback({err : "ERROR IN PASSING BACK FILE NAMES"});
             if (textStatus){
-              console.log(something);
+              console.log(response);
               return alert("textStatus: " + textStatus);
             }
             if (HTTPError){
-              console.log(something);
+              console.log(response);
               return alert("HTTPError: " + HTTPError);
             }
           }
@@ -147,6 +147,8 @@
           success : function(result){
             console.log(result);
             rightSide.append("<div>MERGED MGF FILES</div>");
+            var difference = new Date() - startTime;
+            rightSide.append("<div>MILLISECONDS TAKEN: " + difference + " <div>")
             return callback(null);
           },
           error: function(something, textStatus, HTTPError){
