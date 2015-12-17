@@ -19,12 +19,14 @@ my $type="";
 my $parsed_filename="";
 my $min_intensity="";
 my $min_reporters="";
+my $should_select=0;
 if ($ARGV[0]=~/\w/) { $read_file_path=$ARGV[0];} else { exit 1;}
 if ($ARGV[1]=~/\w/) { $write_file_path=$ARGV[1];} else { exit 1;}
 if ($ARGV[2]=~/\w/) { $mz_error=$ARGV[2];} else { exit 1;}
 if ($ARGV[3]=~/\w/) { $type=$ARGV[3];} else { exit 1;}
 if ($ARGV[4]=~/\w/) { $min_intensity=$ARGV[4];} else { exit 1;}
 if ($ARGV[5]=~/\w/) { $min_reporters=$ARGV[5];} else { exit 1;}
+if ($ARGV[6]=~/\w/) { $should_select=$ARGV[6];} else { exit 1;}
 
 $parsed_filename=basename($read_file_path);
 
