@@ -96,6 +96,54 @@ def combine_mgf_txt_files():
 @app.route("/tab_2_helper_function", methods=['POST'])
 def tab_2_helper_function():
 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
+	if not os.path.isdir(mgf_read_dir_path):
+		return "mgf read directory path is not a directory", 500
+	mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf')
+	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt')
+	mgf_file_name = str(request.form['mgfFileName'])
+	mz_error = str(int(request.form['mzError']))
+	reporter_type = str(request.form['reporterType'])
+	min_intensity = str(int(request.form['minIntensity']))
+	min_reporters = str(int(request.form['minReporters']))
+	should_select = str(request.form['shouldPerformMGFSelection'])
+	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
+	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
+	print "got through everything"
+	try:
+		os.makedirs(mgf_txt_write_dir_path)
+	except:
+		print "mgf.txt directory probably already there"
+	if should_select == '1':
+		try:
+			os.makedirs(mgf_write_dir_path)
+		except:
+			print "mgf directory probably already there"
+	# print "made directories, about to do the processing."
+	# print mgf_read_path
+	# print mgf_write_path
+	# print mgf_txt_write_path
+	# print mz_error
+	# print reporter_type
+	# print min_intensity
+	# print min_reporters
+	# print should_select
+
+	print "running function"
+	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
+		mz_error, reporter_type, min_intensity, min_reporters, should_select)
+	if error:
+		print "bad bad bad"
+		return error, 500
+	else:
+		return "LOOKING GOOD HERE"
+
+
+
+
+@app.route("/OLD_tab_2_helper_function", methods=['POST'])
+def OLD_tab_2_helper_function():
+	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
 	# print mgf_read_dir_path
 	if not os.path.isdir(mgf_read_dir_path):
 		return "mgf read directory path is not a directory", 500
@@ -132,11 +180,6 @@ def tab_2_helper_function():
 			return "shouldPerformMGFSelection was None", 500
 		if not (should_select == '1' or should_select == '0'):
 			return "shouldPerformMGFSelection not either 0 or 1", 500
-		# 	should_select = 1
-		# elif not should_select:
-		# 	shoud_select = 0
-		# else:
-		# 	return "shouldPerformMGFSelection not either True or False", 500
 	except:
 		return "Missing shouldPerformMGFSelection", 500
 
@@ -237,16 +280,9 @@ def validate_ion_type(ion_type):
 	possibilities = ['iTRAQ4','iTRAQ8','TMT10','TMT2','TMT6']
 	return (ion_type in possibilities)
 
-# print validate_ion_type('iTRAQ4')
 
-
-
-
-@app.route("/testRoutes", methods=['GET'])
-def testRoutes():
-	return science.function_one()
 
 
 if __name__ == "__main__":
-  app.run()
+  app.run(processes=8)
 

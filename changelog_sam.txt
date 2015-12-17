@@ -23,6 +23,9 @@ I'm going to change it so that you can put the script in a folder with the inver
 TO DO: I JUST MOVED EVERYTHING TO A FOLDER CALLED ISOBARIC_EXECUTABLES, NOW I NEED TO ADD THAT TO THE PATH.	
 
 
+Now, I need to make it so it writes them to separate files.
+
+
 
 TEST: for TMT0, run and see if the index stops, because it's from 126 to 126.
 
