@@ -133,8 +133,10 @@
     var performRecalibration = leftSide.find("#perform_recalibration").first().val().trim();
     var recalibrationMzError = leftSide.find('#recalibration_mz_error').first().val().trim();
 
-    var shouldPerformMGFSelection = (mgfOperationToPerform == 'extract_and_select');
-    var shouldRecalibrate = (performRecalibration == 'perform_recalibration')
+    var shouldPerformMGFSelection = (mgfOperationToPerform == 'extract_and_select') ? 1 : 0;
+    console.log("should perform selection: " + shouldPerformMGFSelection);
+    var shouldRecalibrate = (performRecalibration == 'perform_recalibration') ? 1 : 0;
+    console.log("should recalibrate: " + shouldRecalibrate);
 
     console.log(mgfReadDirPath);
     console.log(mgfWriteDirPath);
@@ -222,7 +224,7 @@
         }, function(err){
           callback(err);
         })
-      },
+      }/*,
       function(callback){
         $.ajax({
           type:"POST",
@@ -254,7 +256,7 @@
             return callback("ERROR IN combine_mgf_files");
           }
         });
-      }
+      }*/
     ],
     function(err, result){
       // if (err){console.log(err)}

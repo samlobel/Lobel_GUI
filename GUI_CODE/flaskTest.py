@@ -71,24 +71,26 @@ def combine_mgf_txt_files():
 
 
 
-@app.route("/tab_1_function", methods=['POST'])
-def tab_1_function():
-	# print request.form
-	# print request.args
-	mgf_read_path = str(request.form['mgfReadPath'])
-	print mgf_read_path
-	mgf_write_path = str(request.form['mgfWritePath'])
-	print mgf_write_path
-	mz_error = str(request.form['mzError']);
-	print mz_error
-	reporter_type = str(request.form['reporterType'])
-	print reporter_type
-	min_reporters = str(request.form['minReporters'])
-	print min_reporters
-	min_intensity = str(request.form['minIntensity'])
-	print min_intensity
-	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mz_error, reporter_type, min_intensity, min_reporters)
-	print "ERROR " + str(error)
+# @app.route("/tab_1_function", methods=['POST'])
+# def tab_1_function():
+# 	# print request.form
+# 	# print request.args
+# 	mgf_read_path = str(request.form['mgfReadPath'])
+# 	print mgf_read_path
+# 	mgf_write_path = str(request.form['mgfWritePath'])
+# 	print mgf_write_path
+# 	mz_error = str(request.form['mzError']);
+# 	print mz_error
+# 	reporter_type = str(request.form['reporterType'])
+# 	print reporter_type
+# 	min_reporters = str(request.form['minReporters'])
+# 	print min_reporters
+# 	min_intensity = str(request.form['minIntensity'])
+# 	print min_intensity
+# 	should_select = str(request.form['shouldPerformMGFSelection'])
+# 	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, \
+# 	 	mz_error, reporter_type, min_intensity, min_reporters, should_select)
+# 	print "ERROR " + str(error)
 
 
 @app.route("/tab_2_helper_function", methods=['POST'])
@@ -123,7 +125,24 @@ def tab_2_helper_function():
 		min_intensity = str(int(request.form['minIntensity']))
 	except:
 		return "min_reporters must be an integer", 500
-	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mz_error, reporter_type, min_intensity, min_reporters)
+	try:
+		should_select = str(request.form['shouldPerformMGFSelection'])
+		print "Should select: " + str(should_select)
+		if should_select == None:
+			return "shouldPerformMGFSelection was None", 500
+		if not (should_select == '1' or should_select == '0'):
+			return "shouldPerformMGFSelection not either 0 or 1", 500
+		# 	should_select = 1
+		# elif not should_select:
+		# 	shoud_select = 0
+		# else:
+		# 	return "shouldPerformMGFSelection not either True or False", 500
+	except:
+		return "Missing shouldPerformMGFSelection", 500
+
+	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, \
+		mz_error, reporter_type, min_intensity, min_reporters, should_select)
+
 	if error:
 		return error, 500
 	else:
