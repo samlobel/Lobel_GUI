@@ -19,7 +19,7 @@ my $type="";
 my $parsed_filename="";
 my $min_intensity="";
 my $min_reporters="";
-my $should_select=0;
+my $should_select="0";
 if ($ARGV[0]=~/\w/) { $read_file_path=$ARGV[0];} else { exit 1;}
 if ($ARGV[1]=~/\w/) { $write_file_path=$ARGV[1];} else { exit 1;}
 if ($ARGV[2]=~/\w/) { $mz_error=$ARGV[2];} else { exit 1;}
@@ -111,7 +111,17 @@ unless ($read_file_path=~/\.mgf$/i)
 
 if (open (IN, "$read_file_path"))
 {
-	if (open (OUT, ">$write_file_path"))
+	if ($should_select)
+	{
+		unless (open (OUT, ">$write_file_path"))
+		{
+			print "Should select, but cannot open file to write to\n";
+			exit 1;
+		}
+	}
+	# Always write to table.
+	# if (open (OUT, ">$write_file_path"))
+	if (1)
 	{
 
 		open (OUT_TABLE,">$write_file_path.txt");
@@ -283,13 +293,17 @@ if (open (IN, "$read_file_path"))
 					# $stat{"$reporters_found"}++;
 					if ($reporters_found>=$min_reporters)
 					{
-						# if ($max_max<$max) { $max_max=$max; }
-						print OUT $header;
-						for(my $i=0;$i<$points;$i++)
+						if ($should_select)
 						{
-							print OUT "$mz[$i] $intensity[$i]\n";
+							print OUT $header;
+							for(my $i=0;$i<$points;$i++)
+							{
+								print OUT "$mz[$i] $intensity[$i]\n";
+							}
+							print OUT $footer;	
 						}
-						print OUT $footer;
+						# if ($max_max<$max) { $max_max=$max; }
+						
 						print OUT_TABLE qq!$parsed_filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
 						for(my $k=0;$k<$reporter_count;$k++)
 						{
@@ -367,7 +381,10 @@ if (open (IN, "$read_file_path"))
 				}
 			}
 		}
-		close(OUT);
+		if ($should_select)
+		{
+			close(OUT);
+		}
 		close(OUT_TABLE);
 	}
 	else
