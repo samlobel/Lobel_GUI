@@ -1,73 +1,40 @@
 <div>
   <div style="float:left;width:60%" id="leftSide">
     <h2 style="margin:1%">SELECT FROM ALL MGF FILES IN FOLDER</h2>
-
     <div class="input-group" style="margin: 1%">
-      <span class="input-group-addon" id="basic-addon1">Operation to perform</span>
-      <select class='form-control' id="mgf_operation_to_perform">
-        <option value="extract_and_select">Extract reporter ion intensities AND select viable runs</option>
-        <option value="only_extract">Only Extract reporter ion intensities</option>
+      <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
+      <input type="text" class="form-control" id="mgfReadDirPath">
+    </div>
+      <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">FULL PATH to directory where you WRITE the selected files</span>
+      <input type="text" class="form-control" id="mgfWriteDirPath" placeholder="FULL\PATH\TO\MGF\DIRECTORY">
+    </div>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">&nbspmz_error (ppm, integer) &nbsp</span>
+      <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mz_error">
+    </div>
+    <div class="input-group" style="margin: 1%">
+      <!-- <input type="text" class="form-control" placeholder="yo"> -->
+      <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
+      <select class='form-control' id="reporter_ion_type">
+        {% if inverse_files %}
+          {% for f in inverse_files %}
+            <option value={{f.rpartition('-inv.txt')[0]}}>{{f.rpartition('-inv.txt')[0]}}</option>
+          {% endfor %}
+        {% endif %}
+        <!-- <option value="iTRAQ4">iTRAQ4</option>
+        <option value="iTRAQ8">iTRAQ8</option>
+        <option value="TMT10">TMT10</option> -->
       </select>
     </div>
-
-    <div id="form_elements_if_extract_and_select">
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
-        <input type="text" class="form-control" id="mgfReadDirPath">
-      </div>
-        <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">FULL PATH to directory where you WRITE the selected files</span>
-        <input type="text" class="form-control" id="mgfWriteDirPath">
-      </div>
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">&nbspmz_error (ppm, integer) &nbsp</span>
-        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mz_error">
-      </div>
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
-        <select class='form-control' id="reporter_ion_type">
-          {% if inverse_files %}
-            {% for f in inverse_files %}
-              <option value={{f.rpartition('-inv.txt')[0]}}>{{f.rpartition('-inv.txt')[0]}}</option>
-            {% endfor %}
-          {% endif %}
-        </select>
-      </div>
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
-        <input type="text" class="form-control" id="min_intensity">
-      </div>
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">Minimum Reporters with said intensity</span>
-        <input type="text" class="form-control" id="min_reporters">
-      </div>
-    </div>
-
-    <div id="form_elements_if_only_extract" style="display: none">
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">SAMPLE THING</span>
-        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="sample_thing">
-      </div>
-    </div>
-    <br>
     <div class="input-group" style="margin: 1%">
-      <span class="input-group-addon" id="basic-addon1">Perform largest-reporter recalibration</span>
-      <select class='form-control' id="perform_recalibration">
-        <option value="perform_recalibration">Perform recalibration</option>
-        <option value="do_not_perform_recalibration">Do Not Perform recalibration</option>
-      </select>
+      <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
+      <input type="text" class="form-control" id="min_intensity">
     </div>
-
-    <div id="options_if_recalibrating">
-      <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">&nbsp m/z error for recalibration  (ppm, integer, must be smaller than initial m/z error) &nbsp</span>
-        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="recalibration_mz_error">
-      </div>      
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">Minimum Reporters with said intensity</span>
+      <input type="text" class="form-control" id="min_reporters">
     </div>
-    <div id="options_if_not_recalibrating" style="display: none">
-    </div>
-
-
     <br>
     <button id="tab_2_button" class="btn btn-primary">Click to submit Tab 1</button>
   </div>
@@ -76,47 +43,6 @@
     <ul>
     </ul>
   </div>
-  <script>
-  $("#mgf_operation_to_perform").change(function(e){
-    console.log("Yo");
-    console.log(e.target.value);
-    var value = e.target.value;
-    if (value == 'only_extract'){
-      console.log("value is only_extract");
-      $("#form_elements_if_only_extract").show();
-      $("#form_elements_if_extract_and_select").hide();
-    }
-    else if (value == 'extract_and_select'){
-      console.log("value is extract_and_select");
-      $("#form_elements_if_only_extract").hide();
-      $("#form_elements_if_extract_and_select").show();
-    }
-    else{
-      alert("Something is funky, ask sam whats up");
-    }
-  });
-  </script>
-  <script>
-  $("#perform_recalibration").change(function(e){
-    console.log("Yippie");
-    console.log(e.target.value);
-    var value = e.target.value;
-    if (value == 'perform_recalibration'){
-      console.log("value is perform_recalibration");
-      $("#options_if_recalibrating").show();
-      $("#options_if_not_recalibrating").hide();
-    }
-    else if (value == 'do_not_perform_recalibration'){
-      console.log("value is do_not_perform_recalibration");
-      $("#options_if_recalibrating").hide();
-      $("#options_if_not_recalibrating").show();
-    }
-    else{
-      alert("Something is funky, ask sam whats up");
-    }
-  });
-  </script>
-
   <script>
   $('#tab_2_button').click(function(e){
     console.log("clicked");
@@ -129,13 +55,6 @@
     var reporterType = leftSide.find("#reporter_ion_type").first().val().trim();
     var minReporters = leftSide.find("#min_reporters").first().val().trim();
     var minIntensity = leftSide.find("#min_intensity").first().val().trim();
-    var mgfOperationToPerform = leftSide.find("#mgf_operation_to_perform").first().val().trim();
-    var performRecalibration = leftSide.find("#perform_recalibration").first().val().trim();
-    var recalibrationMzError = leftSide.find('#recalibration_mz_error').first().val().trim();
-
-    var shouldPerformMGFSelection = (mgfOperationToPerform == 'extract_and_select');
-    var shouldRecalibrate = (performRecalibration == 'perform_recalibration')
-
     console.log(mgfReadDirPath);
     console.log(mgfWriteDirPath);
     var rightSide = $(this).parent().siblings("#rightSide").first()
@@ -191,10 +110,7 @@
             mzError : mzError,
             reporterType : reporterType,
             minReporters : minReporters,
-            minIntensity : minIntensity,
-            shouldPerformMGFSelection : shouldPerformMGFSelection,
-            shouldRecalibrate : shouldRecalibrate,
-            recalibrationMzError : recalibrationMzError
+            minIntensity : minIntensity
           }
           console.log("Parsing file");
           rightSide.append("<div>Began selecting from file " + elem + "</div>");
@@ -267,6 +183,19 @@
       }
       that.attr('disabled',false);
     })
-  });
+  })
+
+  //   that.attr('disabled',false);
+  //   return;
+
+  //   $(this).parent().siblings("#rightSide").each(function(index){
+  //     $(this).append("<div>Tab 1</div>");
+  //     setTimeout(function(){
+  //       console.log('better');
+  //       that.attr('disabled',false);
+  //     }, 5000);
+  //   })
+  // });
   </script>
+
 </div>
