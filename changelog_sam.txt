@@ -23,6 +23,9 @@ I'm going to change it so that you can put the script in a folder with the inver
 TO DO: I JUST MOVED EVERYTHING TO A FOLDER CALLED ISOBARIC_EXECUTABLES, NOW I NEED TO ADD THAT TO THE PATH.	
 
 
+
+
+
 Now, I need to make it so it writes them to separate files.
 
 
@@ -161,5 +164,26 @@ Make everything directory-agnostic.
 I also want to switch things to join from appending '/', because that's not very directory agnostic.
 
 
+Future change: I may want to increase parsing speed by getting rid of all double .* instances in a file. Also, I should precompile the regexes. That's probably a big thing. I should profile that.
+
+The regex is SO slow. That's crazy. Once you get to the points, you know you can skip everything else, until you're out of the points. But it doesn't do that, it matches every single regex over and over, and makes them as well instead of using precompiled ones.
+
+It's weird, it looks like out_cal only adjusts the mz of things to make them better, but doesn't change how the reporter-ion intensities are written. No out_cal_table. Does he want one? I think so.
 
 
+So, to sumarrize what I need to do:
+First, do the normal thing. But keep track of each and every peak, and where it happened, per run. Then, at the end of the run, you see how far off the highest peak is, you scale where the reporter ions should be, then you re-run selection, writing the table with amounts from the scaling and thinning of error threshold. And if the thing passes the test the second time, then you know it's okay.
+
+So, you run the thing, but instead of writing anything, you instead use the values to create a new mass array, and re-run it with that. But you've got to do that for every single run, not for the whole thing.
+
+1) Do the selection process on a single run
+2) Find the maximum peak
+3) Scale the values so that they match that one perfectly.
+4) Use those values to do the selection again
+5) If it matches the criteria, write the values, and the table.
+
+I think maybe I should have a totally separate perl script if you're reselecting, it's a big difference.
+
+I should put a check to make sure that the threshold value isn't so big that there's overlap, because overlap is really bad. It means that when you scale, there might be ambiguity in which one you scale in relation to. Things should only go in one pocket!
+
+Note that the min_intensity and min_reporters no longer applies to the first selection process if you're recalibrating, which means that we don't need the extra variables recal_min_intensity and recal_min_reporters.

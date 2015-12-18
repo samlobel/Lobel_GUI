@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+cccs#!/usr/local/bin/perl
 
 use strict;
 use File::Path qw(rmtree);
@@ -234,7 +234,8 @@ if ($error==0)
 												$sum[$reporter_count]+=$intensity[$i];
 												if ($max<$intensity[$i]) { $max=$intensity[$i]; }
 												if ($max_<$intensity[$i]) 
-												{ 
+												{
+												 # Looks like dm is some measure of deviation from expected. 
 													$max_=$intensity[$i]; 
 													$dm_at_max=($mz[$i]-$reporter)/($reporter/1e+6);
 												}
@@ -246,6 +247,7 @@ if ($error==0)
 										}
 										if (0<$max_)
 										{
+											# If they found any
 											print OUT_DM_INT "$reporter\t$dm_at_max\t$max_\n";
 											$reporter_dm{"$reporter"}="$dm_at_max";
 											$reporter_intensity{"$reporter"}="$max_";
@@ -306,6 +308,10 @@ if ($error==0)
 											print OUT_TABLE qq!\t$sum_!;
 										}
 										print OUT_TABLE qq!\t$sum\n!;
+
+										# This part looks like it's the calibrating part.
+										# It looks to me like it's scaling the regex
+
 										# print OUT_CAL $header;
 										# for(my $i=0;$i<$points;$i++)
 										# {

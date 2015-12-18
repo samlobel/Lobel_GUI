@@ -15,10 +15,10 @@
         <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
         <input type="text" class="form-control" id="mgfReadDirPath">
       </div>
-        <div class="input-group" style="margin: 1%">
+      <!-- <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">FULL PATH to directory where you WRITE the selected files</span>
         <input type="text" class="form-control" id="mgfWriteDirPath">
-      </div>
+      </div> -->
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">&nbspmz_error (ppm, integer) &nbsp</span>
         <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mz_error">
@@ -124,7 +124,7 @@
     var that = $(this);
     var leftSide = that.parent();
     var mgfReadDirPath = leftSide.find("#mgfReadDirPath").first().val().trim();
-    var mgfWriteDirPath = leftSide.find("#mgfWriteDirPath").first().val().trim();
+    // var mgfWriteDirPath = leftSide.find("#mgfWriteDirPath").first().val().trim();
     var mzError = leftSide.find("#mz_error").first().val().trim();
     var reporterType = leftSide.find("#reporter_ion_type").first().val().trim();
     var minReporters = leftSide.find("#min_reporters").first().val().trim();
@@ -139,7 +139,7 @@
     console.log("should recalibrate: " + shouldRecalibrate);
 
     console.log(mgfReadDirPath);
-    console.log(mgfWriteDirPath);
+    // console.log(mgfWriteDirPath);
     var rightSide = $(this).parent().siblings("#rightSide").first()
     rightSide.append("<div>Executing Function Now</div>")
     var startTime = new Date();
@@ -188,7 +188,7 @@
           // return next(null);
           var data = {
             mgfReadDirPath : mgfReadDirPath,
-            mgfWriteDirPath : mgfWriteDirPath,
+            // mgfWriteDirPath : mgfWriteDirPath,
             mgfFileName : elem,
             mzError : mzError,
             reporterType : reporterType,

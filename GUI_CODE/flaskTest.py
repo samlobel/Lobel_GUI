@@ -284,5 +284,6 @@ def validate_ion_type(ion_type):
 
 
 if __name__ == "__main__":
-  app.run(processes=8)
+  # app.run(processes=8)
+  app.run()
 

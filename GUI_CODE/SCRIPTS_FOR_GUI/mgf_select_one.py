@@ -1,18 +1,58 @@
 import os
 from os.path import join
+import subprocess
+
+debug = True
 
 def select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, mz_error, reporter_type, min_intensity, min_reporters, should_select):
-	print "Selecting only one"
+	print "Selecting only one, not precompiled"
+	# precomp_name = 'mgf_select_only_one_precompile_regex.pl'
+	perl_file = 'mgf_select_only_one.pl'
 	this_dir = os.path.dirname(os.path.realpath(__file__))
-	perl_call = 'perl ' + join(str(this_dir), 'mgf_select_only_one.pl') + ' '+\
+	perl_call = 'perl ' + join(str(this_dir), perl_file) + ' '+\
 	mgf_read_path + " " + mgf_write_path + " " + mgf_txt_write_path + " " + str(mz_error) + " " +\
 	reporter_type + " " + str(min_intensity) + " " + str(min_reporters) + " " +\
 	str(should_select)
 
 	print perl_call
-	a = os.system(perl_call)
+
+	print "Debug: " + str(debug)
+	if debug:
+		output = subprocess.check_output(perl_call, shell=True)
+		print output
+		return
+	else:
+		a = os.system(perl_call)
+		return a
+	# a = os.system(perl_call)
+	# status, output = 
+	# output = subprocess.chec
 	# if a != 0:
-	return a
+	# return a
+
+def select_only_one_recalibrate(mgf_read_path, mgf_write_path, mgf_txt_write_path, mz_error, reporter_type, min_intensity, min_reporters, should_select, recal_mz_error):
+	this_dir = os.path.dirname(os.path.realpath(__file__))
+	perl_file = 'mgf_select_only_one_with_recalibrate.pl'
+	perl_call = 'perl ' + join(str(this_dir), not_precomp_name) + ' '+\
+	mgf_read_path + " " + mgf_write_path + " " + mgf_txt_write_path + " " + str(mz_error) + " " +\
+	reporter_type + " " + str(min_intensity) + " " + str(min_reporters) + " " +\
+	str(should_select) + " " + str(recal_mz_error)
+	print perl_call
+
+	print "Debug: " + str(debug)
+	if debug:
+		output = subprocess.check_output(perl_call, shell=True)
+		print output
+		return
+	else:
+		a = os.system(perl_call)
+		return a
+
+	
+	# a = os.system(perl_call)
+	# # if a != 0:
+	# return a
+
 
 def test_drive():
 	print "GREAT JOB SUCCESS NOW"

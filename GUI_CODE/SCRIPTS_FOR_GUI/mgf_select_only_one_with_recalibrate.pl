@@ -21,6 +21,8 @@ my $parsed_filename="";
 my $min_intensity="";
 my $min_reporters="";
 my $should_select="0";
+my $recal_mz_error="";
+
 
 if ($ARGV[0]=~/\w/) { $read_file_path=$ARGV[0];} else { exit 1;}
 if ($ARGV[1]=~/\w/) { $write_file_path=$ARGV[1];} else { exit 1;}
@@ -30,6 +32,8 @@ if ($ARGV[4]=~/\w/) { $type=$ARGV[4];} else { exit 1;}
 if ($ARGV[5]=~/\w/) { $min_intensity=$ARGV[5];} else { exit 1;}
 if ($ARGV[6]=~/\w/) { $min_reporters=$ARGV[6];} else { exit 1;}
 if ($ARGV[7]=~/\w/) { $should_select=$ARGV[7];} else { exit 1;}
+if ($ARGV[8]=~/\w/) { $recal_mz_error=$ARGV[8];} else { exit 1;}
+
 
 $parsed_filename=basename($read_file_path);
 
@@ -106,300 +110,658 @@ else
 # mkdir(qq!$dir/selected-d$mz_error-$type-$min_intensity-$min_reporters/reporter_cal!);
 # mkdir(qq!$dir/not-selected-d$mz_error-$type-$min_intensity-$min_reporters!);
 # mkdir(qq!$dir/merged-d$mz_error-$type-$min_intensity-$min_reporters!);
+
 unless ($read_file_path=~/\.mgf$/i)
 {
 	print "This doesn't look like it's an MGF file.\n";
 	exit 1;
 }
-
-if (open (IN, "$read_file_path"))
+unless (open (IN, "$read_file_path"))
 {
-	if ($should_select)
+	print "Cannot open MGF file.\n";
+	exit 1;
+}
+
+if ($should_select)
+{
+	unless (open (OUT, ">$write_file_path"))
 	{
-		unless (open (OUT, ">$write_file_path"))
-		{
-			print "Should select, but cannot open file to write to\n";
-			exit 1;
-		}
-	}
-	# Always write to table.
-	# if (open (OUT, ">$write_file_path"))
-	if (1)
-	{
-		open (OUT_TABLE,">$write_txt_file_path");
-		print OUT_TABLE qq!filename\tscan\tcharge\trt\tMS1_intensity!;
-		foreach my $reporter (@reporters)
-		{
-			my $reporter_=int($reporter);
-			print OUT_TABLE qq!\t$type-$reporter_!;
-		}
-		print OUT_TABLE qq!\t$type-sum\n!;
-		my $pepmass=0;
-		my $ms1_intensity="";
-		my $title="";
-		my $scans="";
-		my $charge="NA";
-		my $rt="";
-		my @mz=();
-		my @intensity=();
-		my $header="";
-		my $footer="";
-		my $started_reading_fragments=0;
-		my $done_reading_fragments=0;
-		my $points=0;
-		my $line="";
-		my @top20_title=();
-		my @top20_mz=();
-		my @top20_int=();
-		my @all_mz=();
-		my @all_int=();
-		my @all_count=();
-		my $all_count_max=0;
-		while($line=<IN>)
-		{
-			if ($line=~/^TITLE=(.*)$/)
-			{
-				$title=$1;
-				if ($title=~/scans:\s*(.*)$/)
-				{
-					$scans=$1;
-				}
-				else
-				{
-					if ($title=~/^Scan ([0-9\.]+), Time=([0-9\.\-\+edED]+)/)
-					{
-						$scans=$1;
-						$rt=$2;
-					}
-				}
-			}
-			if ($line=~/^PEPMASS=([0-9\.\-\+edED]+)\s?([0-9\.\-\+edED]*)\s*$/)
-			{
-				$pepmass=$1;
-				$ms1_intensity=$2;
-			}
-			# if ($line=~/^CHARGE=([0-9\.\-\+]+)\s*$/)
-			if ($line=~/^CHARGE=([0-9]+)[\.\-\+]+\s*$/)
-			{
-				$charge=$1;
-			}
-			if ($line=~/^RTINSECONDS=([0-9\.\-\+]+)\s*$/)
-			{
-				$rt=$1;
-			}
-			if ($line=~/^SCANS=([0-9\.\-\+]+)\s*$/)
-			{
-				$scans=$1;
-			}
-			if ($line=~/^([0-9\.\+\-edED]+)\s([0-9\.\+\-edED]+)/)
-			{
-				$started_reading_fragments=1;
-				$mz[$points]=$1;
-				$intensity[$points]=$2;
-				
-				$points++;
-			}
-			else
-			{
-				if ($started_reading_fragments==1)
-				{
-					$done_reading_fragments=1;
-				}
-			}
-			if ($started_reading_fragments==0)
-			{
-				$header.=$line;
-			}
-			else
-			{
-				if ($done_reading_fragments==1)
-				{
-					$footer.=$line;
-					#----------------------------------------------------------#
-					my $max=0;
-					my $sum=0;
-					my @sum=();
-					my @reporters_found=();
-					my %reporter_dm=();
-					my %reporter_intensity=();
-					my $reporter_max=$reporters[0];
-					my $reporter_count=0;
-					foreach my $reporter (@reporters)
-					{
-						my $max_=0;
-						my $dm_at_max=0;
-						$sum[$reporter_count]=0;
-						$reporter_intensity{"$reporter"}=0;
-						for(my $i=0;$i<$points;$i++)
-						{
-							if (abs($reporter-$mz[$i])<$mz_error*$reporter/1e+6)
-							{
-								$sum+=$intensity[$i];
-								$sum[$reporter_count]+=$intensity[$i];
-								if ($max<$intensity[$i]) { $max=$intensity[$i]; }
-								if ($max_<$intensity[$i]) 
-								{ 
-									$max_=$intensity[$i];
-									$dm_at_max=($mz[$i]-$reporter)/($reporter/1e+6);
-								}
-								if ($min_intensity<$intensity[$i])
-								{
-									$reporters_found[$reporter_count]=1;
-								}
-							}
-						}
-						# if (0<$max_)
-						# {
-						# 	$reporter_dm{"$reporter"}="$dm_at_max";
-						# 	$reporter_intensity{"$reporter"}="$max_";
-						# 	if ($reporter_intensity{"$reporter_max"}<=$max_)
-						# 	{
-						# 		$reporter_max=$reporter;
-						# 	}
-						# 	if (-$mz_error<$dm_at_max)
-						# 	{
-						# 		my $k=int(($dm_at_max+$mz_error)/(2*$mz_error)*200);
-						# 		$stat{"dm#$reporter#$k"}++;
-						# 	}
-						# 	my $log2_int=int(log($max_)/log(2));
-						# 	$stat{"$filename#$reporter#$log2_int"}++;
-						# 	$stat{"$reporter#$log2_int"}++;
-						# }
-						$reporter_count++;
-					}
-					# if (0<$max)
-					# {
-					# 	foreach my $reporter (@reporters)
-					# 	{
-					# 		if ($reporter_intensity{"$reporter"}=~/\w/)
-					# 		{
-					# 			my $dm=$reporter_dm{"$reporter"}-$reporter_dm{"$reporter_max"};
-					# 			if(-$mz_error<$dm and $dm<$mz_error)
-					# 			{
-					# 				print OUT_DM_INT_ qq!$reporter\t$dm\t$reporter_intensity{"$reporter"}\n!;
-					# 			}
-					# 		}
-					# 	}
-					# }
-					my $reporters_found=0;
-					my $reporter_count=0;
-					foreach my $reporter (@reporters)
-					{
-						if ($reporters_found[$reporter_count]==1)
-						{
-							$reporters_found++;
-						}
-						$reporter_count++;
-					}
-					# $stat{"$filename#$reporters_found"}++;
-					# $stat{"$reporters_found"}++;
-					if ($reporters_found>=$min_reporters)
-					{
-						if ($should_select)
-						{
-							print OUT $header;
-							for(my $i=0;$i<$points;$i++)
-							{
-								print OUT "$mz[$i] $intensity[$i]\n";
-							}
-							print OUT $footer;	
-						}
-						# if ($max_max<$max) { $max_max=$max; }
-						
-						print OUT_TABLE qq!$parsed_filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
-						for(my $k=0;$k<$reporter_count;$k++)
-						{
-							my $sum_=$sum[$k]/(1.0*$sum);
-							print OUT_TABLE qq!\t$sum_!;
-						}
-						print OUT_TABLE qq!\t$sum\n!;
-						# print OUT_CAL $header;
-						# for(my $i=0;$i<$points;$i++)
-						# {
-						# 	my $mz=$mz[$i]*(1-$reporter_dm{"$reporter_max"}/1e+6);
-						# 	my $decimals=$mz[$i];
-						# 	$decimals=~s/^[^\.]*\.?//;
-						# 	$mz=int($mz*(10**length($decimals))+0.5)/(1.0*(10**length($decimals)));
-						# 	print OUT_CAL "$mz $intensity[$i]\n";
-						# }
-						# print OUT_CAL $footer;
-						# $header=~s/TITLE=/TITLE=$filename, /m;
-						# print OUT_MERGED $header;
-						# for(my $i=0;$i<$points;$i++)
-						# {
-						# 	print OUT_MERGED "$mz[$i] $intensity[$i]\n";
-						# }
-						# print OUT_MERGED $footer;
-						# print OUT_CAL_MERGED $header;
-						# for(my $i=0;$i<$points;$i++)
-						# {
-						# 	my $mz=$mz[$i]*(1-$reporter_dm{"$reporter_max"}/1e+6);
-						# 	my $decimals=$mz[$i];
-						# 	$decimals=~s/^[^\.]*\.?//;
-						# 	$mz=int($mz*(10**length($decimals))+0.5)/(1.0*(10**length($decimals)));
-						# 	print OUT_CAL_MERGED "$mz $intensity[$i]\n";
-						# }
-						# print OUT_CAL_MERGED $footer;
-						# print OUT_MERGED_TABLE qq!$filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
-						# for(my $k=0;$k<$reporter_count;$k++)
-						# {
-						# 	my $sum_=$sum[$k]/(1.0*$sum);
-						# 	print OUT_MERGED_TABLE qq!\t$sum_!;
-						# }
-						# print OUT_MERGED_TABLE qq!\t$sum\n!;
-						# $count_spectra_++;
-						# $count_spectra++;
-					}
-					# else
-					# {
-					# 	# print OUT_NOT $header;
-					# 	# for(my $i=0;$i<$points;$i++)
-					# 	# {
-					# 	# 	print OUT_NOT "$mz[$i] $intensity[$i]\n";
-					# 	# }
-					# 	# print OUT_NOT $footer;
-					# 	$header=~s/TITLE=/TITLE=$filename, /m;
-					# 	print OUT_MERGED_NOT $header;
-					# 	for(my $i=0;$i<$points;$i++)
-					# 	{
-					# 		print OUT_MERGED_NOT "$mz[$i] $intensity[$i]\n";
-					# 	}
-					# 	print OUT_MERGED_NOT $footer;
-					# }
-					#----------------------------------------#
-					
-					$pepmass="";
-					$title="";
-					$charge="";
-					@mz=();
-					@intensity=();
-					$header="";
-					$footer="";
-					$started_reading_fragments=0;
-					$done_reading_fragments=0;
-					$points=0;
-					# $count_all_spectra_++;
-					# $count_all_spectra++;
-				}
-			}
-		}
-		if ($should_select)
-		{
-			close(OUT);
-		}
-		close(OUT_TABLE);
-	}
-	else
-	{
-		print "Could not write for some reason";
+		print "Cannot write to selected .mgf file\n";
 		exit 1;
 	}
 }
-else
+
+unless (open (OUT_TABLE,">$write_txt_file_path"))
 {
-	print "Could not read file";
+	print "Cannot write to .mgf.txt file\n";
 	exit 1;
 }
+
+
+print OUT_TABLE qq!filename\tscan\tcharge\trt\tMS1_intensity!;
+
+foreach my $reporter (@reporters)
+{
+	my $reporter_=int($reporter);
+	print OUT_TABLE qq!\t$type-$reporter_!;
+	##########################################################
+	# Could be problematic with TMT10, because of replicants #
+	##########################################################
+}
+print OUT_TABLE qq!\t$type-sum\n!;
+my $pepmass=0;
+my $ms1_intensity="";
+my $title="";
+my $scans="";
+my $charge="NA";
+my $rt="";
+my @mz=();
+my @intensity=();
+my $header="";
+my $footer="";
+my $started_reading_fragments=0;
+my $done_reading_fragments=0;
+my $points=0;
+my $line="";
+# # my @top20_title=();
+# my @top20_mz=();
+# my @top20_int=();
+# my @all_mz=();
+# my @all_int=();
+# my @all_count=();
+# my $all_count_max=0;
+while($line=<IN>)
+{
+	if ($line=~/^TITLE=(.*)$/)
+	{
+		$title=$1;
+		if ($title=~/scans:\s*(.*)$/)
+		{
+			$scans=$1;
+		}
+		else
+		{
+			if ($title=~/^Scan ([0-9\.]+), Time=([0-9\.\-\+edED]+)/)
+			{
+				$scans=$1;
+				$rt=$2;
+			}
+		}
+	}
+	if ($line=~/^PEPMASS=([0-9\.\-\+edED]+)\s?([0-9\.\-\+edED]*)\s*$/)
+	{
+		$pepmass=$1;
+		$ms1_intensity=$2;
+	}
+	# if ($line=~/^CHARGE=([0-9\.\-\+]+)\s*$/)
+	if ($line=~/^CHARGE=([0-9]+)[\.\-\+]+\s*$/)
+	{
+		$charge=$1;
+	}
+	if ($line=~/^RTINSECONDS=([0-9\.\-\+]+)\s*$/)
+	{
+		$rt=$1;
+	}
+	if ($line=~/^SCANS=([0-9\.\-\+]+)\s*$/)
+	{
+		$scans=$1;
+	}
+	if ($line=~/^([0-9\.\+\-edED]+)\s([0-9\.\+\-edED]+)/)
+	{
+		$started_reading_fragments=1;
+		$mz[$points]=$1;
+		$intensity[$points]=$2;
+		$points++;
+	}
+	else
+	{
+		if ($started_reading_fragments==1)
+		{
+			$done_reading_fragments=1;
+		}
+	}
+	if ($started_reading_fragments==0)
+	{
+		$header.=$line;
+	}
+	else
+	{
+		if ($done_reading_fragments==1)
+		{
+			$footer.=$line;
+			#----------------------------------------------------------#
+			my $max=0;
+			my $sum=0;
+			my @sum=();
+			my @reporters_found=();
+			my %reporter_dm=();
+			my %reporter_intensity=();
+			my $reporter_max=$reporters[0];
+			my $mz_max=0;
+			my $reporter_count=0;
+			my $scaling_at_max=0;
+			foreach my $reporter (@reporters)
+			{
+				for(my $i=0;$i<$points;$i++)
+				{
+					# if it's inside the original threshold:
+					if (abs($reporter-$mz[$i])<$mz_error*$reporter/1e+6)
+					{
+						if ($max<$intensity[$i])
+						{
+							$max=$intensity[$i];
+							$mz_max=$mz[$i]; #That makes it so we know at what mz the highest count is 
+							$reporter_max=$reporter;
+							# In here, if we find a new global max, we say that's the new global max,
+							# and that the mz_at that max is something, and the reporter is the reporter.
+							# This is iterating points, when we've done all the points for all the
+							# reporters, we move on.
+						}
+					}
+				}
+				# Outside of iterating over points. Now, move on to outside reporters
+			}
+			if (0<$max)
+			{
+				# We've seen something. This is important, because otherwise we'll get division errors or worse.
+				$scaling_at_max=$mz_max/$reporter_max; #This is what we use to make the new reporter ion mass array.
+				my @scaled_reporters=();
+				my $scaled_single_reporter=0;
+				foreach my $reporter (@reporters)
+				{
+					$scaled_single_reporter = $reporter * scaling_at_max;
+					push (@scaled_reporters, $scaled_single_reporter);
+					# Now, we've got a scaled reporter list.
+					# print @scaled_reporters;
+				}
+				# Now that we have a scaled reporter list, we need to re-select.
+				print "scaled\n";
+				print "@scaled_reporters\n";
+				print "unscaled\n";
+				print "@reporters\n";
+				my $recal_reporter_count=0;
+				my @recal_sum=();
+				my $recal_sum=0;
+				my $recal_sum_max=0;
+				my $recal_reporters_found=0;
+				foreach my $scaled_reporter (@scaled_reporters)
+				{
+					$recal_sum=0;
+					$recal_sum[$recal_reporter_count]=0;
+					for(my $i=0;$i<$points;$i++)
+					{
+						if (abs($scaled_reporter-$mz[$i])<$recal_mz_error*$scaled_reporter/1e+6)
+						{
+							$recal_sum+=$intensity[$i];
+							# $recal_sum[$recal_reporter_count]+=$intensity[$i];
+						}
+					}
+					$recal_sum[$recal_reporter_count]=$recal_sum;
+					if($recal_sum_max<$recal_sum)
+					{
+						$recal_sum_max=$recal_sum;
+					}
+					if ($recal_sum >= $min_intensity){
+						$recal_reporters_found++;
+					}
+					$recal_reporter_count++;
+				}
+				if ($recal_reporters_found >= $min_reporters)
+				{
+					if ($should_select)
+					{
+						print OUT $header;
+						for(my $i=0;$i<$points;$i++)
+						{
+							print OUT "$mz[$i] $intensity[$i]\n"; #Why is it a space instead of a tab????? That could be totally bad.
+						}
+						print OUT $footer;	
+					}
+
+					print OUT_TABLE qq!$parsed_filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
+					for(my $k=0;$k<$recal_reporter_count;$k++)
+					{
+						my $sum_=$recal_sum[$k]/(1.0*$recal_sum_max);
+						print OUT_TABLE qq!\t$sum_!;
+					}
+					print OUT_TABLE qq!\t$recal_sum_max\n!;
+				}
+			}
+			$pepmass="";
+			$title="";
+			$charge="";
+			@mz=();
+			@intensity=();
+			$header="";
+			$footer="";
+			$started_reading_fragments=0;
+			$done_reading_fragments=0;
+			$points=0;
+		}
+	}
+}
+
+if ($should_select)
+{
+	close(OUT);
+}
+close(OUT);
+
+exit 0;
+
+
+# Things under here shouldn't matter.
+
+# if (open (IN, "$read_file_path"))
+# {
+# 	if ($should_select)
+# 	{
+# 		unless (open (OUT, ">$write_file_path"))
+# 		{
+# 			print "Should select, but cannot open file to write to\n";
+# 			exit 1;
+# 		}
+# 	}
+# 	# Always write to table.
+# 	# if (open (OUT, ">$write_file_path"))
+# 	if (1)
+# 	{
+# 		open (OUT_TABLE,">$write_txt_file_path");
+# 		# print OUT_TABLE qq!filename\tscan\tcharge\trt\tMS1_intensity!;
+# 		# foreach my $reporter (@reporters)
+# 		# {
+# 		# 	my $reporter_=int($reporter);
+# 		# 	print OUT_TABLE qq!\t$type-$reporter_!;
+# 		# }
+# 		# print OUT_TABLE qq!\t$type-sum\n!;
+# 		# my $pepmass=0;
+# 		# my $ms1_intensity="";
+# 		# my $title="";
+# 		# my $scans="";
+# 		# my $charge="NA";
+# 		# my $rt="";
+# 		# my @mz=();
+# 		# my @intensity=();
+# 		# my $header="";
+# 		# my $footer="";
+# 		# my $started_reading_fragments=0;
+# 		# my $done_reading_fragments=0;
+# 		# my $points=0;
+# 		# my $line="";
+# 		# my @top20_title=();
+# 		# my @top20_mz=();
+# 		# my @top20_int=();
+# 		# my @all_mz=();
+# 		# my @all_int=();
+# 		# my @all_count=();
+# 		# my $all_count_max=0;
+# 		# while($line=<IN>)
+# 		# {
+# 		# 	if ($line=~/^TITLE=(.*)$/)
+# 		# 	{
+# 		# 		$title=$1;
+# 		# 		if ($title=~/scans:\s*(.*)$/)
+# 		# 		{
+# 		# 			$scans=$1;
+# 		# 		}
+# 		# 		else
+# 		# 		{
+# 		# 			if ($title=~/^Scan ([0-9\.]+), Time=([0-9\.\-\+edED]+)/)
+# 		# 			{
+# 		# 				$scans=$1;
+# 		# 				$rt=$2;
+# 		# 			}
+# 		# 		}
+# 		# 	}
+# 		# 	if ($line=~/^PEPMASS=([0-9\.\-\+edED]+)\s?([0-9\.\-\+edED]*)\s*$/)
+# 		# 	{
+# 		# 		$pepmass=$1;
+# 		# 		$ms1_intensity=$2;
+# 		# 	}
+# 		# 	# if ($line=~/^CHARGE=([0-9\.\-\+]+)\s*$/)
+# 		# 	if ($line=~/^CHARGE=([0-9]+)[\.\-\+]+\s*$/)
+# 		# 	{
+# 		# 		$charge=$1;
+# 		# 	}
+# 		# 	if ($line=~/^RTINSECONDS=([0-9\.\-\+]+)\s*$/)
+# 		# 	{
+# 		# 		$rt=$1;
+# 		# 	}
+# 		# 	if ($line=~/^SCANS=([0-9\.\-\+]+)\s*$/)
+# 		# 	{
+# 		# 		$scans=$1;
+# 		# 	}
+# 		# 	if ($line=~/^([0-9\.\+\-edED]+)\s([0-9\.\+\-edED]+)/)
+# 		# 	{
+# 		# 		$started_reading_fragments=1;
+# 		# 		$mz[$points]=$1;
+# 		# 		$intensity[$points]=$2;
+# 		# 		$points++;
+# 		# 	}
+# 		# 	else
+# 		# 	{
+# 		# 		if ($started_reading_fragments==1)
+# 		# 		{
+# 		# 			$done_reading_fragments=1;
+# 		# 		}
+# 		# 	}
+# 		# 	if ($started_reading_fragments==0)
+# 		# 	{
+# 		# 		$header.=$line;
+# 		# 	}
+# 		# 	else
+# 		# 	{
+# 		# 		if ($done_reading_fragments==1)
+# 		# 		{
+# 		# 			$footer.=$line;
+# 		# 			#----------------------------------------------------------#
+# 		# 			my $max=0;
+# 		# 			my $sum=0;
+# 		# 			my @sum=();
+# 		# 			my @reporters_found=();
+# 		# 			my %reporter_dm=();
+# 		# 			my %reporter_intensity=();
+# 		# 			my $reporter_max=$reporters[0];
+# 		# 			my $mz_max=0;
+# 		# 			my $reporter_count=0;
+# 		# 			my $scaling_at_max=0;
+# 		# 			foreach my $reporter (@reporters)
+# 		# 			{
+# 		# 				# my $max_=0;
+# 		# 				# my $dm_at_max=0;
+# 		# 				# $sum[$reporter_count]=0;
+# 		# 				# $reporter_intensity{"$reporter"}=0;
+# 		# 				for(my $i=0;$i<$points;$i++)
+# 		# 				{
+# 		# 					# if it's inside the original threshold:
+# 		# 					if (abs($reporter-$mz[$i])<$mz_error*$reporter/1e+6)
+# 		# 					{
+# 		# 						# $sum+=$intensity[$i];
+# 		# 						# $sum[$reporter_count]+=$intensity[$i];
+# 		# 						if ($max<$intensity[$i])
+# 		# 						{
+# 		# 							$max=$intensity[$i];
+# 		# 							$mz_max=$mz[$i]; #That makes it so we know at what mz the highest count is 
+# 		# 							$reporter_max=$reporter;
+# 		# 							# In here, if we find a new global max, we say that's the new global max,
+# 		# 							# and that the mz_at that max is something, and the reporter is the reporter.
+# 		# 							# This is iterating points, when we've done all the points for all the
+# 		# 							# reporters, we move on.
+# 		# 						}
+# 		# 						# if ($max_<$intensity[$i]) 
+# 		# 						# { 
+# 		# 						# 	$max_=$intensity[$i];
+# 		# 						# 	$dm_at_max=($mz[$i]-$reporter)/($reporter/1e+6);
+# 		# 						# }
+# 		# 						# if ($min_intensity<$intensity[$i])
+# 		# 						# {
+# 		# 						# 	$reporters_found[$reporter_count]=1;
+# 		# 						# }
+# 		# 					}
+# 		# 				}
+# 		# 				# Outside of iterating over points. Now, move on to outside reporters
+
+
+# 		# 				# for(my $i=0;$i<$points;$i++)
+# 		# 				# {
+# 		# 				# 	# if it's inside the original threshold:
+# 		# 				# 	if (abs($reporter-$mz[$i])<$mz_error*$reporter/1e+6)
+# 		# 				# 	{
+# 		# 				# 		$sum+=$intensity[$i];
+# 		# 				# 		$sum[$reporter_count]+=$intensity[$i];
+# 		# 				# 		if ($max<$intensity[$i]) { $max=$intensity[$i]; }
+# 		# 				# 		if ($max_<$intensity[$i]) 
+# 		# 				# 		{ 
+# 		# 				# 			$max_=$intensity[$i];
+# 		# 				# 			$dm_at_max=($mz[$i]-$reporter)/($reporter/1e+6);
+# 		# 				# 		}
+# 		# 				# 		if ($min_intensity<$intensity[$i])
+# 		# 				# 		{
+# 		# 				# 			$reporters_found[$reporter_count]=1;
+# 		# 				# 		}
+# 		# 				# 	}
+# 		# 				# }
+
+# 		# 				# if (0<$max_)
+# 		# 				# {
+# 		# 				# 	$reporter_dm{"$reporter"}="$dm_at_max";
+# 		# 				# 	$reporter_intensity{"$reporter"}="$max_";
+# 		# 				# 	if ($reporter_intensity{"$reporter_max"}<=$max_)
+# 		# 				# 	{
+# 		# 				# 		$reporter_max=$reporter;
+# 		# 				# 	}
+# 		# 				# 	if (-$mz_error<$dm_at_max)
+# 		# 				# 	{
+# 		# 				# 		my $k=int(($dm_at_max+$mz_error)/(2*$mz_error)*200);
+# 		# 				# 		$stat{"dm#$reporter#$k"}++;
+# 		# 				# 	}
+# 		# 				# 	my $log2_int=int(log($max_)/log(2));
+# 		# 				# 	$stat{"$filename#$reporter#$log2_int"}++;
+# 		# 				# 	$stat{"$reporter#$log2_int"}++;
+# 		# 				# }
+
+
+# 		# 				# $reporter_count++;
+# 		# 			}
+# 		# 			if (0<$max)
+# 		# 			{
+# 		# 				# We've seen something. This is important, because otherwise we'll get division errors or worse.
+# 		# 				$scaling_at_max=$mz_max/$reporter_max; #This is what we use to make the new reporter ion mass array.
+# 		# 				my @scaled_reporters=();
+# 		# 				my $scaled_single_reporter=0;
+# 		# 				foreach my $reporter (@reporters)
+# 		# 				{
+# 		# 					$scaled_single_reporter = $reporter * scaling_at_max;
+# 		# 					push (@scaled_reporters, $scaled_single_reporter);
+# 		# 					# Now, we've got a scaled reporter list.
+# 		# 					# print @scaled_reporters;
+# 		# 				}
+# 		# 				# Now that we have a scaled reporter list, we need to re-select.
+# 		# 				print @scaled_reporters;
+# 		# 				my $recal_reporter_count=0;
+# 		# 				my @recal_sum=();
+# 		# 				my $recal_sum=0;
+# 		# 				my $recal_sum_max=0;
+# 		# 				my $recal_reporters_found=0;
+# 		# 				foreach my $scaled_reporter (@scaled_reporters)
+# 		# 				{
+# 		# 					$recal_sum=0;
+# 		# 					$recal_sum[$recal_reporter_count]=0;
+# 		# 					for(my $i=0;$i<$points;$i++)
+# 		# 					{
+# 		# 						if (abs($scaled_reporter-$mz[$i])<$recal_mz_error*$scaled_reporter/1e+6)
+# 		# 						{
+# 		# 							$recal_sum+=$intensity[$i];
+# 		# 							# $recal_sum[$recal_reporter_count]+=$intensity[$i];
+# 		# 						}
+# 		# 					}
+# 		# 					$recal_sum[$recal_reporter_count]=$recal_sum;
+# 		# 					if($recal_sum_max<$recal_sum)
+# 		# 					{
+# 		# 						$recal_sum_max=$recal_sum;
+# 		# 					}
+# 		# 					if ($recal_sum >= $recal_min_intensity){
+# 		# 						$recal_reporters_found++;
+# 		# 					}
+# 		# 					$recal_reporter_count++;
+# 		# 				}
+# 		# 				if ($recal_reporters_found >= $min_reporters)
+# 		# 				{
+# 		# 					if ($should_select)
+# 		# 					{
+# 		# 						print OUT $header;
+# 		# 						for(my $i=0;$i<$points;$i++)
+# 		# 						{
+# 		# 							print OUT "$mz[$i] $intensity[$i]\n"; #Why is it a space instead of a tab????? That could be totally bad.
+# 		# 						}
+# 		# 						print OUT $footer;	
+# 		# 					}
+
+# 		# 					print OUT_TABLE qq!$parsed_filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
+# 		# 					for(my $k=0;$k<$recal_reporter_count;$k++)
+# 		# 					{
+# 		# 						my $sum_=$recal_sum[$k]/(1.0*$recal_sum_max);
+# 		# 						print OUT_TABLE qq!\t$sum_!;
+# 		# 					}
+# 		# 					print OUT_TABLE qq!\t$recal_sum_max\n!;
+# 		# 				}
+# 		# 			}
+# 		# 			$pepmass="";
+# 		# 			$title="";
+# 		# 			$charge="";
+# 		# 			@mz=();
+# 		# 			@intensity=();
+# 		# 			$header="";
+# 		# 			$footer="";
+# 		# 			$started_reading_fragments=0;
+# 		# 			$done_reading_fragments=0;
+# 		# 			$points=0;
+
+# 		# 		}
+# 		# 	}
+# 		# } #This is the one for the while line exists thing.
+
+
+
+
+# 					# my $recal_reporters_that_match=0;
+# 					# $recal_reporter_count=0;
+# 					# if (0<$max)
+# 					# {
+# 					# 	foreach my $reporter (@reporters)
+# 					# 	{
+# 					# 		if ($reporter_intensity{"$reporter"}=~/\w/)
+# 					# 		{
+# 					# 			my $dm=$reporter_dm{"$reporter"}-$reporter_dm{"$reporter_max"};
+# 					# 			if(-$mz_error<$dm and $dm<$mz_error)
+# 					# 			{
+# 					# 				print OUT_DM_INT_ qq!$reporter\t$dm\t$reporter_intensity{"$reporter"}\n!;
+# 					# 			}
+# 					# 		}
+# 					# 	}
+# 					# }
+					
+
+
+# 					# my $reporters_found=0;
+# 					# my $reporter_count=0;
+# 					# foreach my $reporter (@reporters)
+# 					# {
+# 					# 	if ($reporters_found[$reporter_count]==1)
+# 					# 	{
+# 					# 		$reporters_found++;
+# 					# 	}
+# 					# 	$reporter_count++;
+# 					# }
+# 					# # $stat{"$filename#$reporters_found"}++;
+# 					# # $stat{"$reporters_found"}++;
+# 					# if ($reporters_found>=$min_reporters)
+# 					# {
+# 					# 	if ($should_select)
+# 					# 	{
+# 					# 		print OUT $header;
+# 					# 		for(my $i=0;$i<$points;$i++)
+# 					# 		{
+# 					# 			print OUT "$mz[$i] $intensity[$i]\n";
+# 					# 		}
+# 					# 		print OUT $footer;	
+# 					# 	}
+# 					# 	# if ($max_max<$max) { $max_max=$max; }
+						
+# 					# 	print OUT_TABLE qq!$parsed_filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
+# 					# 	for(my $k=0;$k<$reporter_count;$k++)
+# 					# 	{
+# 					# 		my $sum_=$sum[$k]/(1.0*$sum);
+# 					# 		print OUT_TABLE qq!\t$sum_!;
+# 					# 	}
+# 					# 	print OUT_TABLE qq!\t$sum\n!;
+# 						# print OUT_CAL $header;
+# 						# for(my $i=0;$i<$points;$i++)
+# 						# {
+# 						# 	my $mz=$mz[$i]*(1-$reporter_dm{"$reporter_max"}/1e+6);
+# 						# 	my $decimals=$mz[$i];
+# 						# 	$decimals=~s/^[^\.]*\.?//;
+# 						# 	$mz=int($mz*(10**length($decimals))+0.5)/(1.0*(10**length($decimals)));
+# 						# 	print OUT_CAL "$mz $intensity[$i]\n";
+# 						# }
+# 						# print OUT_CAL $footer;
+# 						# $header=~s/TITLE=/TITLE=$filename, /m;
+# 						# print OUT_MERGED $header;
+# 						# for(my $i=0;$i<$points;$i++)
+# 						# {
+# 						# 	print OUT_MERGED "$mz[$i] $intensity[$i]\n";
+# 						# }
+# 						# print OUT_MERGED $footer;
+# 						# print OUT_CAL_MERGED $header;
+# 						# for(my $i=0;$i<$points;$i++)
+# 						# {
+# 						# 	my $mz=$mz[$i]*(1-$reporter_dm{"$reporter_max"}/1e+6);
+# 						# 	my $decimals=$mz[$i];
+# 						# 	$decimals=~s/^[^\.]*\.?//;
+# 						# 	$mz=int($mz*(10**length($decimals))+0.5)/(1.0*(10**length($decimals)));
+# 						# 	print OUT_CAL_MERGED "$mz $intensity[$i]\n";
+# 						# }
+# 						# print OUT_CAL_MERGED $footer;
+# 						# print OUT_MERGED_TABLE qq!$filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
+# 						# for(my $k=0;$k<$reporter_count;$k++)
+# 						# {
+# 						# 	my $sum_=$sum[$k]/(1.0*$sum);
+# 						# 	print OUT_MERGED_TABLE qq!\t$sum_!;
+# 						# }
+# 						# print OUT_MERGED_TABLE qq!\t$sum\n!;
+# 						# $count_spectra_++;
+# 						# $count_spectra++;
+# 				# }
+# 					# else
+# 					# {
+# 					# 	# print OUT_NOT $header;
+# 					# 	# for(my $i=0;$i<$points;$i++)
+# 					# 	# {
+# 					# 	# 	print OUT_NOT "$mz[$i] $intensity[$i]\n";
+# 					# 	# }
+# 					# 	# print OUT_NOT $footer;
+# 					# 	$header=~s/TITLE=/TITLE=$filename, /m;
+# 					# 	print OUT_MERGED_NOT $header;
+# 					# 	for(my $i=0;$i<$points;$i++)
+# 					# 	{
+# 					# 		print OUT_MERGED_NOT "$mz[$i] $intensity[$i]\n";
+# 					# 	}
+# 					# 	print OUT_MERGED_NOT $footer;
+# 					# }
+# 					#----------------------------------------#
+					
+# 					# $pepmass="";
+# 					# $title="";
+# 					# $charge="";
+# 					# @mz=();
+# 					# @intensity=();
+# 					# $header="";
+# 					# $footer="";
+# 					# $started_reading_fragments=0;
+# 					# $done_reading_fragments=0;
+# 					# $points=0;
+# 					# $count_all_spectra_++;
+# 					# $count_all_spectra++;
+# 				}
+# 			}
+# 		}
+# 		if ($should_select)
+# 		{
+# 			close(OUT);
+# 		}
+# 		close(OUT_TABLE);
+# 	}
+# 	else
+# 	{
+# 		print "Could not write for some reason";
+# 		exit 1;
+# 	}
+# }
+# else
+# {
+# 	print "Could not read file";
+# 	exit 1;
+# }
 
 # if (opendir(dir,"$dir"))
 # {

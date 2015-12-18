@@ -106,6 +106,18 @@ else
 # mkdir(qq!$dir/selected-d$mz_error-$type-$min_intensity-$min_reporters/reporter_cal!);
 # mkdir(qq!$dir/not-selected-d$mz_error-$type-$min_intensity-$min_reporters!);
 # mkdir(qq!$dir/merged-d$mz_error-$type-$min_intensity-$min_reporters!);
+
+
+my $re_title=qr/^TITLE=(.*)$/;
+my $re_subtitle_scans=qr/scans:\s*(.*)$/;
+my $re_subtitle_big_scans=qr/^Scan ([0-9\.]+), Time=([0-9\.\-\+edED]+)/;
+my $re_pep_mass=qr/^PEPMASS=([0-9\.\-\+edED]+)\s?([0-9\.\-\+edED]*)\s*$/;
+my $re_charge=qr/^CHARGE=([0-9]+)[\.\-\+]+\s*$/;
+my $re_rtinseconds=qr/^RTINSECONDS=([0-9\.\-\+]+)\s*$/;
+my $re_scans=qr/^SCANS=([0-9\.\-\+]+)\s*$/;
+my $re_run_data=qr/^([0-9\.\+\-edED]+)\s([0-9\.\+\-edED]+)/;
+
+
 unless ($read_file_path=~/\.mgf$/i)
 {
 	print "This doesn't look like it's an MGF file.\n";
@@ -157,41 +169,41 @@ if (open (IN, "$read_file_path"))
 		my $all_count_max=0;
 		while($line=<IN>)
 		{
-			if ($line=~/^TITLE=(.*)$/)
+			if ($line=~ $re_title)
 			{
 				$title=$1;
-				if ($title=~/scans:\s*(.*)$/)
+				if ($title= $re_subtitle_scans)
 				{
 					$scans=$1;
 				}
 				else
 				{
-					if ($title=~/^Scan ([0-9\.]+), Time=([0-9\.\-\+edED]+)/)
+					if ($title=~ $re_subtitle_big_scans)
 					{
 						$scans=$1;
 						$rt=$2;
 					}
 				}
 			}
-			if ($line=~/^PEPMASS=([0-9\.\-\+edED]+)\s?([0-9\.\-\+edED]*)\s*$/)
+			if ($line=~ $re_pep_mass)
 			{
 				$pepmass=$1;
 				$ms1_intensity=$2;
 			}
 			# if ($line=~/^CHARGE=([0-9\.\-\+]+)\s*$/)
-			if ($line=~/^CHARGE=([0-9]+)[\.\-\+]+\s*$/)
+			if ($line=~ $re_charge)
 			{
 				$charge=$1;
 			}
-			if ($line=~/^RTINSECONDS=([0-9\.\-\+]+)\s*$/)
+			if ($line=~ $re_rtinseconds)
 			{
 				$rt=$1;
 			}
-			if ($line=~/^SCANS=([0-9\.\-\+]+)\s*$/)
+			if ($line=~ $re_scans)
 			{
 				$scans=$1;
 			}
-			if ($line=~/^([0-9\.\+\-edED]+)\s([0-9\.\+\-edED]+)/)
+			if ($line=~ $re_run_data)
 			{
 				$started_reading_fragments=1;
 				$mz[$points]=$1;
