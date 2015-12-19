@@ -269,7 +269,7 @@ while($line=<IN>)
 				my $scaled_single_reporter=0;
 				foreach my $reporter (@reporters)
 				{
-					$scaled_single_reporter = $reporter * scaling_at_max;
+					$scaled_single_reporter = $reporter * $scaling_at_max;
 					push (@scaled_reporters, $scaled_single_reporter);
 					# Now, we've got a scaled reporter list.
 					# print @scaled_reporters;
@@ -317,7 +317,6 @@ while($line=<IN>)
 						}
 						print OUT $footer;	
 					}
-
 					print OUT_TABLE qq!$parsed_filename\t$scans\t$charge\t$rt\t$ms1_intensity!;
 					for(my $k=0;$k<$recal_reporter_count;$k++)
 					{

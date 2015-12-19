@@ -20,7 +20,7 @@ def select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, mz_error,
 	if debug:
 		output = subprocess.check_output(perl_call, shell=True)
 		print output
-		return
+		return output
 	else:
 		a = os.system(perl_call)
 		return a
@@ -33,7 +33,7 @@ def select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, mz_error,
 def select_only_one_recalibrate(mgf_read_path, mgf_write_path, mgf_txt_write_path, mz_error, reporter_type, min_intensity, min_reporters, should_select, recal_mz_error):
 	this_dir = os.path.dirname(os.path.realpath(__file__))
 	perl_file = 'mgf_select_only_one_with_recalibrate.pl'
-	perl_call = 'perl ' + join(str(this_dir), not_precomp_name) + ' '+\
+	perl_call = 'perl ' + join(str(this_dir), perl_file) + ' '+\
 	mgf_read_path + " " + mgf_write_path + " " + mgf_txt_write_path + " " + str(mz_error) + " " +\
 	reporter_type + " " + str(min_intensity) + " " + str(min_reporters) + " " +\
 	str(should_select) + " " + str(recal_mz_error)
@@ -43,7 +43,7 @@ def select_only_one_recalibrate(mgf_read_path, mgf_write_path, mgf_txt_write_pat
 	if debug:
 		output = subprocess.check_output(perl_call, shell=True)
 		print output
-		return
+		return output
 	else:
 		a = os.system(perl_call)
 		return a
