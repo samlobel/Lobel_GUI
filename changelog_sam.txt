@@ -22,6 +22,9 @@ I'm going to change it so that you can put the script in a folder with the inver
 
 TO DO: I JUST MOVED EVERYTHING TO A FOLDER CALLED ISOBARIC_EXECUTABLES, NOW I NEED TO ADD THAT TO THE PATH.	
 
+I should write a serializeElement function, that serializes every input in an element.
+That wouldn't be too hard.
+
 
 
 
@@ -187,3 +190,6 @@ I think maybe I should have a totally separate perl script if you're reselecting
 I should put a check to make sure that the threshold value isn't so big that there's overlap, because overlap is really bad. It means that when you scale, there might be ambiguity in which one you scale in relation to. Things should only go in one pocket!
 
 Note that the min_intensity and min_reporters no longer applies to the first selection process if you're recalibrating, which means that we don't need the extra variables recal_min_intensity and recal_min_reporters.
+
+
+What should I do in the next train? I need to put in reasonable defaults. I also need to adjust the names so that they're understandable. But, more importantly, I need to have the python script route correctly. That shouldn't be a frontend thing, the frontend should just pass everything down.

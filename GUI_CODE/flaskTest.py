@@ -101,7 +101,6 @@ def tab_2_helper_function():
 	mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf')
 	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt')
 	mgf_file_name = str(request.form['mgfFileName'])
-	mz_error = str(int(request.form['mzError']))
 	reporter_type = str(request.form['reporterType'])
 	min_intensity = str(int(request.form['minIntensity']))
 	min_reporters = str(int(request.form['minReporters']))
@@ -109,6 +108,13 @@ def tab_2_helper_function():
 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
 	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
 	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
+
+	mz_error = str(int(request.form['mzError']))
+
+	mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
+	mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
+
+	
 	print "got through everything"
 	try:
 		os.makedirs(mgf_txt_write_dir_path)

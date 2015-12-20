@@ -44,5 +44,23 @@
 	  	});
 	  })
 	  </script>
+	  <script type="text/javascript">
+	  function serializeForm(elem){
+	  	// return;
+	  	var toReturn = {};
+	  	$.each(elem, function(i, e){
+	  		// need to get the id of e;
+	  		var jqe = $(e);
+	  		var id = jqe.attr('id');
+	  		if (toReturn[id]){
+	  			// throw "Already seend id " + id
+	  			console.log("Already seend id " + id);
+	  		}
+	  		toReturn[id] = jqe.val();
+	  	})
+	  	return toReturn;
+	  	//$.each($('input, select'), function(e,f){console.log($(f).val())}) is a good start. That prints all the values.
+	  };
+	  </script>
 	</body>
 </html>
