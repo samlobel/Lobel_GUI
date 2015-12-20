@@ -93,8 +93,71 @@ def combine_mgf_txt_files():
 # 	print "ERROR " + str(error)
 
 
+# def check_for_good_input_tab_two(form):
+
+
+
 @app.route("/tab_2_helper_function", methods=['POST'])
 def tab_2_helper_function():
+	print str(request.form)
+	return "Form printed, that's all we want right now"
+
+	# First, figure out which operation we want to perform.
+	should_select = request.form['mgfOperationToPerform']
+	perform_recalibration = request.form['performRecalibration']
+
+	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
+	mgf_file_name = str(request.form['mgfFileName'])
+	reporter_type = str(request.form['reporterType'])
+	min_intensity = str(int(request.form['minIntensity']))
+	min_reporters = str(int(request.form['minReporters']))
+	should_select = str(request.form['shouldPerformMGFSelection'])
+	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
+	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
+
+	mz_error = str(int(request.form['mzError']))
+
+	mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
+	mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
+
+
+	if not os.path.isdir(mgf_read_dir_path):
+		return "mgf read directory path is not a directory", 500
+	mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf')
+	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt')
+
+
+
+	print "got through everything"
+	try:
+		os.makedirs(mgf_txt_write_dir_path)
+	except:
+		print "mgf.txt directory probably already there"
+	if should_select == '1':
+		try:
+			os.makedirs(mgf_write_dir_path)
+		except:
+			print "mgf directory probably already there"
+
+	print "running function"
+
+
+
+	if perform_recalibration == '1':
+		# check inputs
+
+		pass
+	elif perform_recalibration == '0':
+		pass
+	else:
+		return "Trouble determining whether to recalibrate, ask Sam", 500
+
+
+
+
+
+
 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
 	if not os.path.isdir(mgf_read_dir_path):
 		return "mgf read directory path is not a directory", 500
