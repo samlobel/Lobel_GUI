@@ -100,32 +100,43 @@ def combine_mgf_txt_files():
 
 @app.route("/tab_2_helper_function", methods=['POST'])
 def tab_2_helper_function():
-	print str(request.form)
-	return "Form printed, that's all we want right now"
+	# return "trial by fire", 500
+	# print str(request.form)
+	# return "Form printed, that's all we want right now"
 
 	# First, figure out which operation we want to perform.
-	should_select = request.form['mgfOperationToPerform']
-	perform_recalibration = request.form['performRecalibration']
+	print "trying out arguments"
+	print str(request.form)
+	perform_recalibration = str(request.form['performRecalibration'])
+	print "through first two"
+	should_select = str(request.form['mgfOperationToPerform'])
+	print "after should_select"
+
 
 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
 	mgf_file_name = str(request.form['mgfFileName'])
-	reporter_type = str(request.form['reporterType'])
+	reporter_type = str(request.form['reporterIonType'])
 	min_intensity = str(int(request.form['minIntensity']))
 	min_reporters = str(int(request.form['minReporters']))
-	should_select = str(request.form['shouldPerformMGFSelection'])
+	# should_select = str(request.form['shouldPerformMGFSelection'])
 
-	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
-	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
-	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
+	print "through next oens"
+
 
 	mz_error = str(int(request.form['mzError']))
 
 	mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
 	mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
 
+	print "mz_errors parsed"
+
+
 
 	print "got through everything"
 	print "now checking general inputs"
+
+	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
+
 
 	if should_select != "0" and should_select != "1":
 		return "could not determine whether to select from mgf file, ask Sam", 500
@@ -137,7 +148,14 @@ def tab_2_helper_function():
 		print "mgf path does not lead to file"
 		return "mgf_path does not lead to a file", 500
 
-	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt')
+	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
+	# mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+	# mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
+
+	print "created paths"
+	
+	mgf_txt_write_path = 'placeholder'
+	mgf_write_path = 'placeholder'
 
 	try:
 		os.makedirs(mgf_txt_write_dir_path)
@@ -145,15 +163,17 @@ def tab_2_helper_function():
 		print "mgf.txt directory probably already there"
 	if not os.path.isdir(mgf_txt_write_dir_path):
 		return "selected_mgf_txt directory could not be created", 500
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name)
 
 	if should_select == '1':
-		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf')
+		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
 		try:
 			os.makedirs(mgf_write_dir_path)
 		except:
 			print "mgf directory probably already there"
 		if not os.path.isdir(mgf_write_dir_path):
 			return "selected_mgf directory could not be created", 500	
+		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
 
 	print "checking general inputs"
 
@@ -405,5 +425,5 @@ def validate_ion_type(ion_type):
 
 if __name__ == "__main__":
   # app.run(processes=8)
-  app.run()
+  app.run(processes=8)
 

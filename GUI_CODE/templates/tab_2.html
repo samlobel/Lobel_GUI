@@ -179,13 +179,21 @@
           rightSide.append("<div>NO FILES TO WRITE!</div>")
           return callback({err : "NO FILES TO WRITE"})
         }
-        async.each(fileArray, function(elem, next){
+        async.eachSeries(fileArray, function(elem, next){
           // var mgfReadPath = mgfReadDirPath + elem;
           // var mgfWritePath = mgfWriteDirPath + elem;
           // console.log(mgfReadPath);
           // return next(null);
-          var data = $.extend({}, serializedForm);
-          data.mgfFileName = elem;
+          // var data = $.extend({}, serializedForm);
+          // data.mgfFileName = elem;
+          // console.log(data);
+          // var data = _.clone(serializedForm);
+          var data = JSON.parse(JSON.stringify(serializedForm));
+          // delete data.__proto__;
+          console.log(data);
+          data['mgfFileName'] = elem;
+          console.log("data from stringify")
+          console.log(data);
           // var data = {
           //   mgfReadDirPath : mgfReadDirPath,
           //   // mgfWriteDirPath : mgfWriteDirPath,
