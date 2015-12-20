@@ -98,6 +98,16 @@ def combine_mgf_txt_files():
 
 
 
+
+
+# @app.route("/tab_2_make_sure_dirs_dont_exist", methods=["POST"])
+# def tab_2_make_sure_dirs_dont_exist():
+# 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
+# 	should_select = str(request.form['mgfOperationToPerform'])
+
+# 	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
+# 	# if os.path.isdir()
+
 @app.route("/tab_2_helper_function", methods=['POST'])
 def tab_2_helper_function():
 	# return "trial by fire", 500
@@ -163,7 +173,7 @@ def tab_2_helper_function():
 		print "mgf.txt directory probably already there"
 	if not os.path.isdir(mgf_txt_write_dir_path):
 		return "selected_mgf_txt directory could not be created", 500
-	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name)
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
 
 	if should_select == '1':
 		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
@@ -207,7 +217,7 @@ def tab_2_helper_function():
 		if math.isnan(first_val):
 			return "mz error isn't a number", 500
 		print "parsing, not recalibrating"
-		error = mgf_select_one.select_only_one_recalibrate(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
+		error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
 			mz_error, reporter_type, min_intensity, min_reporters, should_select)
 		if error:
 			print "bad bad bad"
@@ -424,6 +434,6 @@ def validate_ion_type(ion_type):
 
 
 if __name__ == "__main__":
-  # app.run(processes=8)
   app.run(processes=8)
+  # app.run()
 

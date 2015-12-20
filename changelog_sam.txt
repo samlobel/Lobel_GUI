@@ -193,3 +193,21 @@ Note that the min_intensity and min_reporters no longer applies to the first sel
 
 
 What should I do in the next train? I need to put in reasonable defaults. I also need to adjust the names so that they're understandable. But, more importantly, I need to have the python script route correctly. That shouldn't be a frontend thing, the frontend should just pass everything down.
+
+
+
+I need to test out four different things.
+First: should_select and recalibrate
+Second: not should_select and recalibrate
+Third: should_select and not_recalibrate
+Fourth: not should_select and not_recalibrate
+
+Forsome reason if I recalibrate then it makes the tsxt but if I don't it doesn't. Maybe SI need to change that one
+
+That's nice, it looks like recalibrating doesn't include THREE that not recalibrating does. That sounds like it's working to me.
+What if I change my range to be even smaller? Two?
+Also good is that selecting doesn't change the mgf_txt files
+
+Thinning it out actually doesn't make much difference, looks like dad has a nice instrument on his hands. Thinning to one makes a little bit more difference. And, as expected, zero makes it write nothing.
+
+

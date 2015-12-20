@@ -179,7 +179,7 @@
           rightSide.append("<div>NO FILES TO WRITE!</div>")
           return callback({err : "NO FILES TO WRITE"})
         }
-        async.eachSeries(fileArray, function(elem, next){
+        async.each(fileArray, function(elem, next){
           // var mgfReadPath = mgfReadDirPath + elem;
           // var mgfWritePath = mgfWriteDirPath + elem;
           // console.log(mgfReadPath);

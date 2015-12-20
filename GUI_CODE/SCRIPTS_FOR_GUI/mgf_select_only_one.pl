@@ -72,6 +72,10 @@ elsif ($type=~/^TMT6OLD$/)
 {
 	@reporters=(126.127725,127.124760,128.134433,129.131468,130.141141,131.138176);
 }
+elsif ($type=~/^TMT0$/)
+{
+	@reporters=(126.127725);
+}
 else
 {
 	print "Error: Have not specified reporter ion properly\n";

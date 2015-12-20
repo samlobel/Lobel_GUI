@@ -76,6 +76,10 @@ elsif ($type=~/^TMT6OLD$/)
 {
 	@reporters=(126.127725,127.124760,128.134433,129.131468,130.141141,131.138176);
 }
+elsif ($type=~/^TMT0$/)
+{
+	@reporters=(126.127725);
+}
 else
 {
 	print "Error: Have not specified reporter ion properly\n";
@@ -275,10 +279,12 @@ while($line=<IN>)
 					# print @scaled_reporters;
 				}
 				# Now that we have a scaled reporter list, we need to re-select.
-				print "scaled\n";
-				print "@scaled_reporters\n";
-				print "unscaled\n";
-				print "@reporters\n";
+				
+				# print "scaled\n";
+				# print "@scaled_reporters\n";
+				# print "unscaled\n";
+				# print "@reporters\n";
+				
 				my $recal_reporter_count=0;
 				my @recal_sum=();
 				my $recal_sum=0;
