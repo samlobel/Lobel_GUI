@@ -26,11 +26,11 @@
     </div>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
-      <input type="text" class="form-control" id="minIntensity">
+      <input type="text" class="form-control" id="minIntensity" value="1000">
     </div>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">Minimum Reporters with said intensity</span>
-      <input type="text" class="form-control" id="minReporters">
+      <input type="text" class="form-control" id="minReporters" value="2">
     </div>
     <br>
     <div class="input-group" style="margin: 1%">
@@ -44,17 +44,17 @@
     <div id="options_if_recalibrating">
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">&nbspm/z error for initial runthrough (ppm, integer) &nbsp</span>
-        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorInitialRun">
+        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorInitialRun" value="20">
       </div>
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">&nbsp m/z error for recalibration  (ppm, integer, must be smaller than initial m/z error) &nbsp</span>
-        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorRecalibration">
+        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorRecalibration" value="5">
       </div>
     </div>
     <div id="options_if_not_recalibrating" style="display: none">
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">&nbspmz_error (ppm, integer) &nbsp</span>
-        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzError">
+        <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzError" value="20">
       </div>
     </div>
 
