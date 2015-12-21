@@ -70,6 +70,18 @@
       <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
       <input type="text" class="form-control" id="mgfReadDirPath">
     </div> -->
+    <br>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">GENE FILE</span>
+      <select class='form-control' id="geneFile">
+        {% if gene_files %}
+          {% for f in gene_files %}
+            <option value={{f}}>{{f.rpartition('.')[0]}}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    <br>
     <button id="tab_5_button" class="btn btn-primary">Click to submit Tab 5</button>
   </div>
   <div style="float:right;width:30%;height:88vh;border-style:solid;border-width:5px;overflow:scroll;padding:10px" id="rightSide">
@@ -94,7 +106,7 @@
       $('div[id="tab_5"]').find("#options_if_not_recalibrating").show();
     }
     else{
-      alert("Something is funky, ask sam whats up");
+      alert("Something is funky, ask sam whats going on");
     }
   });
   </script>
@@ -159,18 +171,22 @@
 
     // }
     async.waterfall([
-      function(err){
+      function maybeSelectMGF(callback){
         if (serializedForm.mgfOperationToPerform == '1'){
           rightSide.append("<div>Need to select from MGF files, doing that now</div>");
-          
+          return givenRightsideAndDataObjSelectMGF(rightSide, serializedForm, callback);
         }
+        else{
+          rightSide.append("<div>No need to select from MGF files, moving on</div>");
+          return callback(null)
+        }
+      },
+      function (callback){
+        rightSide.append("<After maybe selecting mgf files, we're on to bigger and better things>");
+        return callback(null);
       }
     ],function(err, result){
-      // if (err){console.log(err)}
-      // if(result){console.log(result)}
       console.log("in final waterfall catcher");
-      // if (err && err.err && err.err == "NO FILES TO WRITE"){return;}
-      // console.log(err);
       if (err){
         alert(err)
       }
@@ -178,15 +194,6 @@
       rightSide.append("<div>MILLISECONDS TAKEN: " + difference + " <div>")
       that.attr('disabled', false);
       that.text('Click to submit Tab 5');
-      // Figure out how to do this part.
     })
-
-  	$(this).parent().siblings("#rightSide").each(function(index){
-  		$(this).append("<div>Tab 5</div>");
-  		setTimeout(function(){
-  			console.log('better');
-  			that.attr('disabled',false);
-  		}, 5000);
-  	})
   })</script>
 </div>

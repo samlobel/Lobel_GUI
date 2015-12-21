@@ -7,14 +7,16 @@ use strict;
 
 my $error=0;
 my $xmlfile=0;
+my $xmldir=0;
 my $threshold=0;
 my $proton_mass=1.007276;
 my $label_mass_int=0;
 my $genefile=0;
 if ($ARGV[0]=~/\w/) { $xmlfile=$ARGV[0];} else { exit 1; }
-if ($ARGV[1]=~/\w/) { $threshold=$ARGV[1];} else { exit 1; }
-if ($ARGV[2]=~/\w/) { $label_mass_int=$ARGV[2];} else { exit 1; }
-if ($ARGV[3]=~/\w/) { $genefile=$ARGV[3];} else { exit 1; }
+if ($ARGV[1]=~/\w/) { $xmldir=$ARGV[1];} else { exit 1; }
+if ($ARGV[2]=~/\w/) { $threshold=$ARGV[2];} else { exit 1; }
+if ($ARGV[3]=~/\w/) { $label_mass_int=$ARGV[3];} else { exit 1; }
+if ($ARGV[4]=~/\w/) { $genefile=$ARGV[4];} else { exit 1; }
 if ($error==0)
 {
 	#$xmlfile=~s/\\/\//g;
@@ -45,8 +47,8 @@ if ($error==0)
 	print OUT qq!filename\tscan\tcharge\tpre\tpeptide\tpost\tmodifications\tlabeling\tstart\tlog(e)\ttryptic\tmissed\tunacceptable modifications\tprotein\tgene\tgene_id\tprotein log(e)\tother proteins\tother genes\tother gene ids\tdifferent genes\tdifferent gene families\n!;
 	my $xmlfile_=$xmlfile;
 	$xmlfile_=~s/\.xml$//;
-	mkdir($xmlfile_);
-	system(qq!del $xmlfile_/*!);
+	# mkdir($xmlfile_);
+	# system(qq!del $xmlfile_/*!);
 	my %filenames=();
 	my $mh="";
 	my $mz="";

@@ -73,8 +73,12 @@ def combine_mgf_txt_files():
 @app.route("/tab_5_helper_function", methods=['POST'])
 def tab_5_helper_function():
 	# pass
-	return "not yet implemented", 500
+	# If it gets here, we assume that there are mgf.txt files in the
+	# right place. We should do a check anyways, but we can assume because
+	# of how we get here.
 	
+	return "not yet implemented", 500
+
 
 
 # @app.route("/tab_1_function", methods=['POST'])
