@@ -210,4 +210,20 @@ Also good is that selecting doesn't change the mgf_txt files
 
 Thinning it out actually doesn't make much difference, looks like dad has a nice instrument on his hands. Thinning to one makes a little bit more difference. And, as expected, zero makes it write nothing.
 
+Pretty validating, the recalibration makes a lot more of the runs match. How did I test it? I did a match with width 1, then I did a match with first width 20 and recal 1, and there were about twice as many caught with the second way than with the first
+
+So, I think that those two things are good. The next part I need to get working is the parse_xml. I remember talking about this. Sometimes you want to select the MGF 
+so that you can do a gpm search. And sometimes you want to combine the MGF and the xml file. But you never really want to just parse the XML file, that's not so useful.
+
+So sometimes you can give it a mgf.txt directory and a xml file and have it do the rest, and sometime you give it a mgf directory and an xml file and it'll parse the mgfs, and then combine everything. So, have a second tab where there's a file that gives
+
+Parse xml file:
+Option: use pre-extracted reporter ion mgf.txt files OR select from mgf file first.
+Options for pre-extract: All of the things you need for extraction.
+
+
+It'll be easiest to just start over.
+
+I could get a lot of milage using out of the fact that the mgf data is sorted by intensity.
+
 

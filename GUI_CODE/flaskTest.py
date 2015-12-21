@@ -70,6 +70,9 @@ def combine_mgf_txt_files():
 	else:
 		return "Combined"
 
+@app.route("/tab_5_helper_function", methods=['POST'])
+def tab_5_helper_function():
+	
 
 
 # @app.route("/tab_1_function", methods=['POST'])

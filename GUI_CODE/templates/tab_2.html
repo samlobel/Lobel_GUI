@@ -114,6 +114,7 @@
   $('#tab_2_button').click(function(e){
     console.log("clicked");
     $(this).attr('disabled', true);
+    $(this).attr('value', "Processing ... ")
     var that = $(this);
     var leftSide = that.parent();
     var inputs = leftSide.find('input, select');
@@ -277,7 +278,9 @@
       }
       var difference = new Date() - startTime;
       rightSide.append("<div>MILLISECONDS TAKEN: " + difference + " <div>")
-      that.attr('disabled',false);
+      that.attr('disabled', false);
+      $(this).attr('value', 'Click to submit Tab 1');
+      // Figure out how to do this part.
     })
   });
   </script>

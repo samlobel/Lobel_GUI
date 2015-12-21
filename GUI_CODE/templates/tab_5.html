@@ -1,12 +1,102 @@
 <div>
   <div style="float:left;width:70%" id="leftSide">
-	  <button id="tab_5_button" class="btn btn-primary">Click to submit Tab 5</button>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">Operation to perform</span>
+      <select class='form-control' id="mgfOperationToPerform">
+        <option value="1">Select reporter ions from mgf files</option>
+        <option value="0">Use pre-extracted reporter ion (.mgf.txt) files</option>
+      </select>
+    </div>
+    <!-- I'm not going to give the option to save the selected folders, they lost that right when they didn't do it the first time. -->
+    <div id="options_if_selecting">
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
+        <input type="text" class="form-control" id="mgfReadDirPath">
+      </div>
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
+        <select class='form-control' id="reporterIonType">
+          {% if inverse_files %}
+            {% for f in inverse_files %}
+              <option value={{f.rpartition('-inv.txt')[0]}}>{{f.rpartition('-inv.txt')[0]}}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+      </div>
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
+        <input type="text" class="form-control" id="minIntensity" value="1000">
+      </div>
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">Minimum Reporters with said intensity</span>
+        <input type="text" class="form-control" id="minReporters" value="2">
+      </div>
+
+      <br>
+
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">Perform largest-reporter recalibration</span>
+        <select class='form-control' id="performRecalibration">
+          <option value="1">Perform recalibration</option>
+          <option value="0">Do Not Perform recalibration</option>
+        </select>
+      </div>
+
+      <div id="options_if_recalibrating">
+        <div class="input-group" style="margin: 1%">
+          <span class="input-group-addon" id="basic-addon1">&nbspm/z error for initial runthrough (ppm, integer) &nbsp</span>
+          <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorInitialRun" value="20">
+        </div>
+        <div class="input-group" style="margin: 1%">
+          <span class="input-group-addon" id="basic-addon1">&nbsp m/z error for recalibration  (ppm, integer, must be smaller than initial m/z error) &nbsp</span>
+          <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorRecalibration" value="5">
+        </div>
+      </div>
+      <div id="options_if_not_recalibrating" style="display: none">
+        <div class="input-group" style="margin: 1%">
+          <span class="input-group-addon" id="basic-addon1">&nbspmz_error (ppm, integer) &nbsp</span>
+          <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzError" value="20">
+        </div>
+      </div>      
+
+    </div>
+
+
+    <div id="options_if_not_selecting"  style="display: none">
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF.TXT DIRECTORY</span>
+        <input type="text" class="form-control" id="mgfTxtReadDirPath">
+      </div>
+    </div>
+
+    
+	  <!-- <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
+      <input type="text" class="form-control" id="mgfReadDirPath">
+    </div> -->
+    <button id="tab_5_button" class="btn btn-primary">Click to submit Tab 5</button>
   </div>
   <div style="float:right;width:30%;height:88vh;border-style:solid;border-width:5px;overflow:scroll;padding:10px" id="rightSide">
   	<h1>Progress</h1>
   	<ul>
   	</ul>
   </div>
+  <script type="text/javascript">
+  $("#mgfOperationToPerform").change(function(e){
+    var val = e.target.value;
+    if(val=='1'){
+      $('#options_if_selecting').show();
+      $('#options_if_not_selecting').hide();
+    }
+    else if (val=='0'){
+      $('#options_if_selecting').hide();
+      $('#options_if_not_selecting').show();
+    }
+    else{
+      alert('Somethings fishy with mgfOperationToPerform, tell Sam');
+    }
+  })
+  </script>
   <script>$('#tab_5_button').click(function(e){
   	console.log("clicked");
   	$(this).attr('disabled', true);
