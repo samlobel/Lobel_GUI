@@ -114,7 +114,7 @@
   $('#tab_2_button').click(function(e){
     console.log("clicked");
     $(this).attr('disabled', true);
-    $(this).attr('value', "Processing ... ")
+    $(this).text("Processing ... ")
     var that = $(this);
     var leftSide = that.parent();
     var inputs = leftSide.find('input, select');
@@ -181,32 +181,12 @@
           return callback({err : "NO FILES TO WRITE"})
         }
         async.each(fileArray, function(elem, next){
-          // var mgfReadPath = mgfReadDirPath + elem;
-          // var mgfWritePath = mgfWriteDirPath + elem;
-          // console.log(mgfReadPath);
-          // return next(null);
-          // var data = $.extend({}, serializedForm);
-          // data.mgfFileName = elem;
-          // console.log(data);
-          // var data = _.clone(serializedForm);
           var data = JSON.parse(JSON.stringify(serializedForm));
-          // delete data.__proto__;
           console.log(data);
           data['mgfFileName'] = elem;
           console.log("data from stringify")
           console.log(data);
-          // var data = {
-          //   mgfReadDirPath : mgfReadDirPath,
-          //   // mgfWriteDirPath : mgfWriteDirPath,
-          //   mgfFileName : elem,
-          //   mzError : mzError,
-          //   reporterType : reporterType,
-          //   minReporters : minReporters,
-          //   minIntensity : minIntensity,
-          //   shouldPerformMGFSelection : shouldPerformMGFSelection,
-          //   shouldRecalibrate : shouldRecalibrate,
-          //   recalibrationMzError : recalibrationMzError
-          // }
+
           console.log("Parsing file");
           rightSide.append("<div>Began selecting from file " + elem + "</div>");
 
@@ -219,9 +199,7 @@
             success : function(result){
               console.log(result);
               rightSide.append("<div>Finished Selecting from file " + elem + "</div>");
-              // that.attr('disabled',false);
               return next(null)
-              // alert("Completed Successfully");
             },
             error: function(response, textStatus, HTTPError){
               var responseText = (response && response.responseText) ?
@@ -279,7 +257,7 @@
       var difference = new Date() - startTime;
       rightSide.append("<div>MILLISECONDS TAKEN: " + difference + " <div>")
       that.attr('disabled', false);
-      $(this).attr('value', 'Click to submit Tab 1');
+      that.text('Click to submit Tab 1');
       // Figure out how to do this part.
     })
   });

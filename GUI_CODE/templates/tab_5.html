@@ -1,5 +1,6 @@
 <div>
   <div style="float:left;width:70%" id="leftSide">
+    <h2 style="margin:1%">COMBINE MGF AND XML FILES</h2>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">Operation to perform</span>
       <select class='form-control' id="mgfOperationToPerform">
@@ -134,9 +135,52 @@
   // })
   </script>
   <script>$('#tab_5_button').click(function(e){
+
   	console.log("clicked");
   	$(this).attr('disabled', true);
-  	var that = $(this)
+    // $(this).prop('value', "stevenson");
+    $(this).text("Stevenson")
+  	
+    var that = $(this);
+    var leftSide = that.parent();
+
+    var inputs = leftSide.find('input, select');
+    
+    var serializedForm = serializeForm(inputs);
+    console.log(serializedForm);
+
+    var rightSide = $(this).parent().siblings("#rightSide").first()
+    rightSide.append("<div>Executing Function Now</div>")
+    var startTime = new Date();
+    // async.waterfall([
+
+    // ])
+    // if (serializedForm.mgfOperationToPerform == '1'){
+
+    // }
+    async.waterfall([
+      function(err){
+        if (serializedForm.mgfOperationToPerform == '1'){
+          rightSide.append("<div>Need to select from MGF files, doing that now</div>");
+          
+        }
+      }
+    ],function(err, result){
+      // if (err){console.log(err)}
+      // if(result){console.log(result)}
+      console.log("in final waterfall catcher");
+      // if (err && err.err && err.err == "NO FILES TO WRITE"){return;}
+      // console.log(err);
+      if (err){
+        alert(err)
+      }
+      var difference = new Date() - startTime;
+      rightSide.append("<div>MILLISECONDS TAKEN: " + difference + " <div>")
+      that.attr('disabled', false);
+      that.text('Click to submit Tab 5');
+      // Figure out how to do this part.
+    })
+
   	$(this).parent().siblings("#rightSide").each(function(index){
   		$(this).append("<div>Tab 5</div>");
   		setTimeout(function(){
