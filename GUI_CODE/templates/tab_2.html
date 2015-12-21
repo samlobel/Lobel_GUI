@@ -69,7 +69,7 @@
     </ul>
   </div>
   <script>
-  $("#mgfOperationToPerform").change(function(e){
+  $('div[id="tab_2"]').find("#mgfOperationToPerform").change(function(e){
     console.log("Yo");
     console.log(e.target.value);
     var value = e.target.value;
@@ -90,19 +90,19 @@
   });
   </script>
   <script>
-  $("#performRecalibration").change(function(e){
+  $('div[id="tab_2"]').find("#performRecalibration").change(function(e){
     console.log("Yippie");
     console.log(e.target.value);
     var value = e.target.value;
     if (value == '1'){
       console.log("value is perform_recalibration");
-      $("#options_if_recalibrating").show();
-      $("#options_if_not_recalibrating").hide();
+      $('div[id="tab_2"]').find("#options_if_recalibrating").show();
+      $('div[id="tab_2"]').find("#options_if_not_recalibrating").hide();
     }
     else if (value == '0'){
       console.log("value is do_not_perform_recalibration");
-      $("#options_if_recalibrating").hide();
-      $("#options_if_not_recalibrating").show();
+      $('div[id="tab_2"]').find("#options_if_recalibrating").hide();
+      $('div[id="tab_2"]').find("#options_if_not_recalibrating").show();
     }
     else{
       alert("Something is funky, ask sam whats up");

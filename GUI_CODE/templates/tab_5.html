@@ -8,7 +8,7 @@
       </select>
     </div>
     <!-- I'm not going to give the option to save the selected folders, they lost that right when they didn't do it the first time. -->
-    <div id="options_if_selecting">
+    <div id="options_if_selecting" style="margin: 1%">
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
         <input type="text" class="form-control" id="mgfReadDirPath">
@@ -58,18 +58,13 @@
           <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzError" value="20">
         </div>
       </div>      
-
     </div>
-
-
-    <div id="options_if_not_selecting"  style="display: none">
+    <div id="options_if_not_selecting"  style="display: none; margin: 1%">
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF.TXT DIRECTORY</span>
         <input type="text" class="form-control" id="mgfTxtReadDirPath">
       </div>
     </div>
-
-    
 	  <!-- <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
       <input type="text" class="form-control" id="mgfReadDirPath">
@@ -82,20 +77,61 @@
   	</ul>
   </div>
   <script type="text/javascript">
-  $("#mgfOperationToPerform").change(function(e){
+  $('div[id="tab_5"]').find("#performRecalibration").change(function(e){
+    // console.log($(this))
+    console.log("Yippie");
+    console.log(e.target.value);
+    var value = e.target.value;
+    if (value == '1'){
+      console.log("value is perform_recalibration");
+      $('div[id="tab_5"]').find("#options_if_recalibrating").show();
+      $('div[id="tab_5"]').find("#options_if_not_recalibrating").hide();
+    }
+    else if (value == '0'){
+      console.log("value is do_not_perform_recalibration");
+      $('div[id="tab_5"]').find("#options_if_recalibrating").hide();
+      $('div[id="tab_5"]').find("#options_if_not_recalibrating").show();
+    }
+    else{
+      alert("Something is funky, ask sam whats up");
+    }
+  });
+  </script>
+  <script type="text/javascript">
+  $('div[id="tab_5"]').find("#mgfOperationToPerform").change(function(e){
     var val = e.target.value;
+    console.log("mgfOperationToPerform value is " + val);
     if(val=='1'){
-      $('#options_if_selecting').show();
-      $('#options_if_not_selecting').hide();
+      console.log('val is 1')
+      $('div[id="tab_5"]').find('#options_if_selecting').show();
+      $('div[id="tab_5"]').find('#options_if_not_selecting').hide();
     }
     else if (val=='0'){
-      $('#options_if_selecting').hide();
-      $('#options_if_not_selecting').show();
+      console.log('val is 0')
+      $('div[id="tab_5"]').find('#options_if_selecting').hide();
+      $('div[id="tab_5"]').find('#options_if_not_selecting').show();
     }
     else{
       alert('Somethings fishy with mgfOperationToPerform, tell Sam');
     }
-  })
+  });
+  // $("#mgfOperationToPerform").change(function(e){
+  //   var val = e.target.value;
+  //   console.log("mgfOperationToPerform value is " + val);
+  //   if(val=='1'){
+  //     console.log('val is 1')
+  //     $('#options_if_selecting_5').show();
+  //     $('#options_if_not_selecting_5').hide();
+  //   }
+  //   else if (val=='0'){
+  //     console.log('val is 0')
+  //     $('#options_if_selecting_5').hide();
+  //     $('#options_if_not_selecting_5').show();
+  //   }
+  //   else{
+  //     alert('Somethings fishy with mgfOperationToPerform, tell Sam');
+  //   }
+  // })
   </script>
   <script>$('#tab_5_button').click(function(e){
   	console.log("clicked");

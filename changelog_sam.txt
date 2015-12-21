@@ -221,6 +221,7 @@ Parse xml file:
 Option: use pre-extracted reporter ion mgf.txt files OR select from mgf file first.
 Options for pre-extract: All of the things you need for extraction.
 
+Once it's selected, I'll have a directory for the .mgf.txt files. Now, I need to run parse_xtandem_sam. 
 
 It'll be easiest to just start over.
 
