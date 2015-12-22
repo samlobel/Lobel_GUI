@@ -1,4 +1,5 @@
 import re
+import os
 
 def validate_float(num):
 	strnum = str(num)
@@ -16,6 +17,15 @@ def validate_int(num):
 def validate_ion_type(ion_type):
 	possibilities = ['iTRAQ4','iTRAQ8','TMT10','TMT2','TMT6','TMT0']
 	return (ion_type in possibilities)
+
+
+def validate_gene_file(genefile):
+	this_dir = os.path.dirname(os.path.realpath(__file__))
+	genefile_fullpath = os.path.join(this_dir, 'gene_files', genefile)
+	return os.path.isfile(genefile_fullpath)
+	
+
+
 
 
 

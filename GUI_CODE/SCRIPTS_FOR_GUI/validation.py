@@ -1,7 +1,8 @@
 from utility import *
 
 
-def validate_tab_2(form):
+def validate_tab_2(request):
+	print "validating tab_2"
 	try:
 		mgf_read_dir_path = str(request.form['mgfReadDirPath'])
 		mgf_file_name = str(request.form['mgfFileName'])
@@ -75,3 +76,46 @@ def validate_tab_2(form):
 	except:
 		print "Missing form input"
 		return False, "Missing form input"
+
+
+def validate_tab_5(request):
+	print "validating tab_5"
+	try:
+		xml_read_path = request.form['xmlReadPath']
+		threshold = request.form['threshold']
+		reporter_type = request.form['reporter_type']
+		geneFile = request.form['geneFile']
+
+		if not xml_read_path or str(threshold) or reporter_type or geneFile:
+			print "Missing form input (one is blank)"
+			return False, "Missing form input (one is blank)"
+
+		if not xml_read_path.endswith('.xml'):
+			print "xml file doesn't end with .xml, that's fishy"
+			return False, "xml file doesn't end with .xml, that's fishy"
+
+		if not os.path.isfile(xml_read_path):
+			print "could not open xml file at that path"
+			return False, "could not open xml file at that path"
+
+		if not validate_float(threshold):
+			print "threshold must be a decimal"
+			return False, "threshold must be a decimal"
+
+		if not validate_ion_type(reporter_type):
+			print "Invalid reporter type"
+			return False, "Invalid reporter type"
+
+		# this_dir = os.path.dirname(os.path.realpath(__file__))
+		if not validate_gene_file(geneFile):
+			print "invalid gene file"
+			return False, "Invalid gene file"
+
+		return True
+		
+	except:
+		print "Missing form input"
+		return False, "Missing form input"
+
+
+

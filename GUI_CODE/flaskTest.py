@@ -74,6 +74,23 @@ def combine_mgf_txt_files():
 
 @app.route("/tab_5_helper_function", methods=['POST'])
 def tab_5_helper_function():
+	valid, validation_error = validation.validate_tab_5(request)
+
+	if not valid:
+		return validation_error, 500
+
+	xml_read_path = request.form['xmlReadPath']
+	threshold = request.form['threshold']
+	reporter_type = request.form['reporter_type']
+	geneFile = request.form['geneFile']
+	a = call_xml_parser.parse_xtandem(xml_read_path, threshold, labelMass, geneFile)
+	
+	if a:
+		return "Error in parse-xml function", 500
+	return "Looks good"
+
+
+
 	# pass
 	# If it gets here, we assume that there are mgf.txt files in the
 	# right place. We should do a check anyways, but we can assume because

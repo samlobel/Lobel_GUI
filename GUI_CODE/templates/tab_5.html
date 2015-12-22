@@ -182,9 +182,25 @@
           return callback(null)
         }
       },
-      function (callback){
-        rightSide.append("<After maybe selecting mgf files, we're on to bigger and better things>");
-        return callback(null);
+      function parseXML(callback){
+        rightSide.append("<div>Parsing XML file with MGF files</div>");
+        $.ajax({
+          type:"POST",
+          url:"tab_2_helper_function",
+          data : serializedForm,
+          // dataType : 'json',
+          // contentType: "application/json",
+          success : function(result){
+            console.log(result);
+            rightSide.append('<div>xml parsed successfully</div>');
+            return callback(null);
+          },
+          error: function(response, textStatus, HTTPError){
+            console.log(response);
+            rightSide.append('<div style="color:red">' + response + '</div>')
+            return callback("error: " + response)
+          }
+        })
       }
     ],function(err, result){
       console.log("in final waterfall catcher");

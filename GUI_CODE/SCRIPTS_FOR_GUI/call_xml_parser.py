@@ -5,6 +5,7 @@ from os.path import join
 
 def parse_xtandem(full_path_to_xml, threshold, label_mass_int, genefile):
 	this_dir = os.path.dirname(os.path.realpath(__file__))
+
 	full_path_to_genefile = join(this_dir, 'gene_files', genefile)
 
 	# perl_call = "perl " + join(this_dir, 'parse_xtandem_lobel.pl') + ' '+\
