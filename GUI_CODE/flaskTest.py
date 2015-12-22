@@ -10,6 +10,7 @@ from SCRIPTS_FOR_GUI import call_xml_parser
 import os
 from SCRIPTS_FOR_GUI import combine_xml_mgf
 import math
+from SCRIPTS_FOR_GUI import utility
 # from science_code import science
 
 @app.route("/")
@@ -76,7 +77,33 @@ def tab_5_helper_function():
 	# If it gets here, we assume that there are mgf.txt files in the
 	# right place. We should do a check anyways, but we can assume because
 	# of how we get here.
-	
+	print "HANDLE TAB 5"
+	xml_read_path = str(request.form['xmlReadPath'])
+	# print xml_read_path
+	try:
+		threshold = int(request.form['threshold'])
+		threshold = str(round(threshold / 100.0, 2))
+	except ValueError:
+		print "bad threshold value"
+		return "ERROR: Bad Threshold Value", 500
+	# try:
+	# labelMass = str(int(request.form['labelMass']))
+	# except ValueError:
+	# 	print "bad labelMass value"
+	# 	return "ERROR: Bad Label Mass Value", 500
+	# print labelMass
+	reporter_type = str(request.form['reporter_type'])
+	utility.validate_ion_type(reporter_type)
+
+	geneFile = str(request.form['geneFile'])
+	a = call_xml_parser.parse_xtandem(xml_read_path, threshold, labelMass, geneFile)
+	to_return =  "Return from parse_xtandem: " + str(a)
+	if a:
+		return a, 500
+	print to_return
+	return to_return	
+
+
 	return "not yet implemented", 500
 
 
@@ -202,7 +229,7 @@ def tab_2_helper_function():
 	# I should also check to make sure it's one of the ones we want.
 	# if  reporter_type 
 	# valid_reporter_types = ['TMT0','TMT2','TMT6','TMT10','iTRAQ4','iTRAQ8']
-	if not validate_ion_type(reporter_type):
+	if not utility.validate_ion_type(reporter_type):
 		return "reporter type not a valid choice", 500
 
 	if perform_recalibration == '1':
@@ -235,120 +262,6 @@ def tab_2_helper_function():
 			return "Looking good"
 	else:
 		return "Trouble determining whether to recalibrate, ask Sam", 500
-
-	# print "running function"
-	# if perform_recalibration == '1':
-	# 	# check inputs
-
-	# 	pass
-	# elif perform_recalibration == '0':
-	# 	pass
-	# else:
-	# 	return "Trouble determining whether to recalibrate, ask Sam", 500
-
-
-	# mgf_read_dir_path = str(request.form['mgfReadDirPath'])
-	# if not os.path.isdir(mgf_read_dir_path):
-	# 	return "mgf read directory path is not a directory", 500
-	# mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf')
-	# mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt')
-	# mgf_file_name = str(request.form['mgfFileName'])
-	# reporter_type = str(request.form['reporterType'])
-	# min_intensity = str(int(request.form['minIntensity']))
-	# min_reporters = str(int(request.form['minReporters']))
-	# should_select = str(request.form['shouldPerformMGFSelection'])
-
-	# mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
-	# mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
-	# mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
-
-	# mz_error = str(int(request.form['mzError']))
-
-	# mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
-	# mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
-
-	
-	# print "got through everything"
-	# try:
-	# 	os.makedirs(mgf_txt_write_dir_path)
-	# except:
-	# 	print "mgf.txt directory probably already there"
-	# if should_select == '1':
-	# 	try:
-	# 		os.makedirs(mgf_write_dir_path)
-	# 	except:
-	# 		print "mgf directory probably already there"
-	# # print "made directories, about to do the processing."
-	# # print mgf_read_path
-	# # print mgf_write_path
-	# # print mgf_txt_write_path
-	# # print mz_error
-	# # print reporter_type
-	# # print min_intensity
-	# # print min_reporters
-	# # print should_select
-
-	# print "running function"
-	# error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
-	# 	mz_error, reporter_type, min_intensity, min_reporters, should_select)
-	# if error:
-	# 	print "bad bad bad"
-	# 	return error, 500
-	# else:
-	# 	return "LOOKING GOOD HERE"
-
-
-
-
-# @app.route("/OLD_tab_2_helper_function", methods=['POST'])
-# def OLD_tab_2_helper_function():
-# 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
-# 	# print mgf_read_dir_path
-# 	if not os.path.isdir(mgf_read_dir_path):
-# 		return "mgf read directory path is not a directory", 500
-# 	mgf_write_dir_path = str(request.form['mgfWriteDirPath'])
-# 	# print mgf_write_dir_path
-# 	if not os.path.isdir(mgf_write_dir_path):
-# 		return "mgf write directory path is not a directory", 500
-# 	mgf_file_name = str(request.form['mgfFileName'])
-# 	print mgf_file_name
-# 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
-# 	if not os.path.isfile(mgf_read_path):
-# 		return "no file at specified path", 500
-# 	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
-# 	print mgf_write_path
-# 	try:
-# 		mz_error = str(int(request.form['mzError']));
-# 	except:
-# 		return "mz_error must be an integer", 500
-# 	reporter_type = str(request.form['reporterType'])
-# 	if not reporter_type:
-# 		return "reporter type not specified", 500
-# 	try:
-# 		min_reporters = str(int(request.form['minReporters']))
-# 	except:
-# 		return "min_reporters must be an integer", 500
-# 	try:
-# 		min_intensity = str(int(request.form['minIntensity']))
-# 	except:
-# 		return "min_reporters must be an integer", 500
-# 	try:
-# 		should_select = str(request.form['shouldPerformMGFSelection'])
-# 		print "Should select: " + str(should_select)
-# 		if should_select == None:
-# 			return "shouldPerformMGFSelection was None", 500
-# 		if not (should_select == '1' or should_select == '0'):
-# 			return "shouldPerformMGFSelection not either 0 or 1", 500
-# 	except:
-# 		return "Missing shouldPerformMGFSelection", 500
-
-# 	error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, \
-# 		mz_error, reporter_type, min_intensity, min_reporters, should_select)
-
-# 	if error:
-# 		return error, 500
-# 	else:
-# 		return "LOOKS GOOD HOMIE"
 
 @app.route("/tab_3_function", methods=['POST'])
 def tab_3_function():
@@ -435,9 +348,9 @@ def secondSubmit():
 def validate_directory(dirname):
 	pass
 
-def validate_ion_type(ion_type):
-	possibilities = ['iTRAQ4','iTRAQ8','TMT10','TMT2','TMT6','TMT0']
-	return (ion_type in possibilities)
+# def validate_ion_type(ion_type):
+# 	possibilities = ['iTRAQ4','iTRAQ8','TMT10','TMT2','TMT6','TMT0']
+# 	return (ion_type in possibilities)
 
 
 

@@ -58,8 +58,13 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 	os.mkdir(xml_dir_name)
 	print "created xml directory"
 
+	try:
+		float(error_threshold)
+	except:
+		return "error threshold could not be parsed into a float"
+
 	perl_call = "perl " + join(this_dir, 'parse_xtandem_sam.pl') + ' '+\
-		full_path_to_xml + ' ' + xml_dir_name + ' ' + str(threshold) + ' ' +\
+		full_path_to_xml + ' ' + xml_dir_name + ' ' + str(error_threshold) + ' ' +\
 		str(label_mass) + ' ' + full_path_to_genefile
 
 	print perl_call
@@ -69,7 +74,6 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 		return "ERROR PARSING XML IN PERL SCRIPT"
 	else:
 		return 0
-
 
 
 def convert_reporter_to_label_mass(reporter):

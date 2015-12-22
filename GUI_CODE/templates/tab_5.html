@@ -15,16 +15,6 @@
         <input type="text" class="form-control" id="mgfReadDirPath">
       </div>
       <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
-        <select class='form-control' id="reporterIonType">
-          {% if inverse_files %}
-            {% for f in inverse_files %}
-              <option value={{f.rpartition('-inv.txt')[0]}}>{{f.rpartition('-inv.txt')[0]}}</option>
-            {% endfor %}
-          {% endif %}
-        </select>
-      </div>
-      <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
         <input type="text" class="form-control" id="minIntensity" value="1000">
       </div>
@@ -81,7 +71,18 @@
         {% endif %}
       </select>
     </div>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
+      <select class='form-control' id="reporterIonType">
+        {% if inverse_files %}
+          {% for f in inverse_files %}
+            <option value={{f.rpartition('-inv.txt')[0]}}>{{f.rpartition('-inv.txt')[0]}}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
     <br>
+
     <button id="tab_5_button" class="btn btn-primary">Click to submit Tab 5</button>
   </div>
   <div style="float:right;width:30%;height:88vh;border-style:solid;border-width:5px;overflow:scroll;padding:10px" id="rightSide">
