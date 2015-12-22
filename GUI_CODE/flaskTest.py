@@ -11,6 +11,7 @@ import os
 from SCRIPTS_FOR_GUI import combine_xml_mgf
 import math
 from SCRIPTS_FOR_GUI import utility
+from SCRIPTS_FOR_GUI import validation
 # from science_code import science
 
 @app.route("/")
@@ -146,62 +147,31 @@ def tab_5_helper_function():
 
 @app.route("/tab_2_helper_function", methods=['POST'])
 def tab_2_helper_function():
-	# return "trial by fire", 500
-	# print str(request.form)
-	# return "Form printed, that's all we want right now"
+	valid, validation_error = validation.validate_tab_2(request.form)
+	if not valid:
+		print "Not valid, error is " + str(validation_error)
+		return validation_error, 500
 
-	# First, figure out which operation we want to perform.
-	print "trying out arguments"
-	print str(request.form)
-	perform_recalibration = str(request.form['performRecalibration'])
-	print "through first two"
-	should_select = str(request.form['mgfOperationToPerform'])
-	print "after should_select"
+	# Wow,  that's so much better.
+	# Now, to make the values.
 
+	# I'm pretty confident about this, so I'll move on for now.
 
 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
 	mgf_file_name = str(request.form['mgfFileName'])
 	reporter_type = str(request.form['reporterIonType'])
 	min_intensity = str(int(request.form['minIntensity']))
 	min_reporters = str(int(request.form['minReporters']))
-	# should_select = str(request.form['shouldPerformMGFSelection'])
 
-	print "through next oens"
-
+	perform_recalibration = str(request.form['performRecalibration'])
+	should_select = str(request.form['mgfOperationToPerform'])
 
 	mz_error = str(int(request.form['mzError']))
 
 	mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
 	mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
 
-	print "mz_errors parsed"
-
-
-
-	print "got through everything"
-	print "now checking general inputs"
-
-	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
-
-
-	if should_select != "0" and should_select != "1":
-		return "could not determine whether to select from mgf file, ask Sam", 500
-
-	if not os.path.isdir(mgf_read_dir_path):
-		return "mgf read directory path is not a directory", 500
-
-	if not os.path.isfile(mgf_read_path):
-		print "mgf path does not lead to file"
-		return "mgf_path does not lead to a file", 500
-
-	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
-	# mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
-	# mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
-
-	print "created paths"
-	
-	mgf_txt_write_path = 'placeholder'
-	mgf_write_path = 'placeholder'
+	#Now, to check/make directories 
 
 	try:
 		os.makedirs(mgf_txt_write_dir_path)
@@ -221,47 +191,151 @@ def tab_2_helper_function():
 			return "selected_mgf directory could not be created", 500	
 		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
 
-	print "checking general inputs"
-
-	# reporter_type = str(request.form['reporterType'])
-	if not reporter_type:
-		return "reporter type not specified", 500
-	# I should also check to make sure it's one of the ones we want.
-	# if  reporter_type 
-	# valid_reporter_types = ['TMT0','TMT2','TMT6','TMT10','iTRAQ4','iTRAQ8']
-	if not utility.validate_ion_type(reporter_type):
-		return "reporter type not a valid choice", 500
+		# Still ugly, but that's because it's complicated
 
 	if perform_recalibration == '1':
-		first_val = int(mz_error_initial_run)
-		second_val = int(mz_error_recalibration)
-		if math.isnan(first_val) or math.isnan(second_val):
-			return "One of your mz_errors isn't a number", 500
-		if first_val < second_val:
-			return "recalibration error must be smaller than initial error", 500
-		print "parsing, recalibrating"
-		error = mgf_select_one.select_only_one_recalibrate(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
-			mz_error_initial_run, reporter_type, min_intensity, min_reporters, should_select, mz_error_recalibration)
+		# pass
+		error = mgf_select_one.select_only_one_recalibrate(mgf_read_path, \
+			mgf_write_path, mgf_txt_write_path, mz_error_initial_run,\
+			reporter_type, min_intensity, min_reporters, should_select, \
+			mz_error_recalibration)
 		if error:
-			print "bad bad bad"
-			return error, 500
+			print "error in mgf_select_with_recalibrate"
+			return "error in mgf_select_with_recalibrate", 500
 		else:
-			return "Looking good."
+			return "mgf_select run with recalibration"
 
-	elif perform_recalibration == '0':
-		first_val = int(mz_error)
-		if math.isnan(first_val):
-			return "mz error isn't a number", 500
-		print "parsing, not recalibrating"
-		error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
-			mz_error, reporter_type, min_intensity, min_reporters, should_select)
-		if error:
-			print "bad bad bad"
-			return error, 500
-		else:
-			return "Looking good"
 	else:
-		return "Trouble determining whether to recalibrate, ask Sam", 500
+		# I can do this because I checked for both in validation
+		error = mgf_select_one.select_only_one(mgf_read_path, \
+			mgf_write_path, mgf_txt_write_path, mz_error, reporter_type, \
+			min_intensity, min_reporters, should_select)
+		if error:
+			print "error in mgf_select_no_recalibrate"
+			return "error in mgf_select_no_recalibrate", 500
+		else:
+			return "mgf_select without recalibration run successfully"
+
+
+
+# @app.route("/NO_VALIDATION_tab_2_helper_function", methods=['POST'])
+# def NO_VALIDATION_tab_2_helper_function():
+# 	# return "trial by fire", 500
+# 	# print str(request.form)
+# 	# return "Form printed, that's all we want right now"
+
+# 	# First, figure out which operation we want to perform.
+# 	print "trying out arguments"
+# 	print str(request.form)
+# 	perform_recalibration = str(request.form['performRecalibration'])
+# 	print "through first two"
+# 	should_select = str(request.form['mgfOperationToPerform'])
+# 	print "after should_select"
+
+
+# 	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
+# 	mgf_file_name = str(request.form['mgfFileName'])
+# 	reporter_type = str(request.form['reporterIonType'])
+# 	min_intensity = str(int(request.form['minIntensity']))
+# 	min_reporters = str(int(request.form['minReporters']))
+# 	# should_select = str(request.form['shouldPerformMGFSelection'])
+
+# 	print "through next oens"
+
+
+# 	mz_error = str(int(request.form['mzError']))
+
+# 	mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
+# 	mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
+
+# 	print "mz_errors parsed"
+
+
+
+# 	print "got through everything"
+# 	print "now checking general inputs"
+
+# 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
+
+
+# 	if should_select != "0" and should_select != "1":
+# 		return "could not determine whether to select from mgf file, ask Sam", 500
+
+# 	if not os.path.isdir(mgf_read_dir_path):
+# 		return "mgf read directory path is not a directory", 500
+
+# 	if not os.path.isfile(mgf_read_path):
+# 		print "mgf path does not lead to file"
+# 		return "mgf_path does not lead to a file", 500
+
+# 	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
+# 	# mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+# 	# mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
+
+# 	print "created path names"
+	
+# 	mgf_txt_write_path = 'placeholder'
+# 	mgf_write_path = 'placeholder'
+
+# 	try:
+# 		os.makedirs(mgf_txt_write_dir_path)
+# 	except:
+# 		print "mgf.txt directory probably already there"
+# 	if not os.path.isdir(mgf_txt_write_dir_path):
+# 		return "selected_mgf_txt directory could not be created", 500
+# 	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
+
+# 	if should_select == '1':
+# 		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
+# 		try:
+# 			os.makedirs(mgf_write_dir_path)
+# 		except:
+# 			print "mgf directory probably already there"
+# 		if not os.path.isdir(mgf_write_dir_path):
+# 			return "selected_mgf directory could not be created", 500	
+# 		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+
+# 	print "checking general inputs"
+
+# 	# reporter_type = str(request.form['reporterType'])
+# 	if not reporter_type:
+# 		return "reporter type not specified", 500
+# 	# I should also check to make sure it's one of the ones we want.
+# 	# if  reporter_type 
+# 	# valid_reporter_types = ['TMT0','TMT2','TMT6','TMT10','iTRAQ4','iTRAQ8']
+# 	if not utility.validate_ion_type(reporter_type):
+# 		return "reporter type not a valid choice", 500
+
+# 	if perform_recalibration == '1':
+# 		first_val = int(mz_error_initial_run)
+# 		second_val = int(mz_error_recalibration)
+# 		if math.isnan(first_val) or math.isnan(second_val):
+# 			return "One of your mz_errors isn't a number", 500
+# 		if first_val < second_val:
+# 			return "recalibration error must be smaller than initial error", 500
+# 		print "parsing, recalibrating"
+# 		error = mgf_select_one.select_only_one_recalibrate(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
+# 			mz_error_initial_run, reporter_type, min_intensity, min_reporters, should_select, mz_error_recalibration)
+# 		if error:
+# 			print "bad bad bad"
+# 			return error, 500
+# 		else:
+# 			return "Looking good."
+
+# 	elif perform_recalibration == '0':
+# 		first_val = int(mz_error)
+# 		if math.isnan(first_val):
+# 			return "mz error isn't a number", 500
+# 		print "parsing, not recalibrating"
+# 		error = mgf_select_one.select_only_one(mgf_read_path, mgf_write_path, mgf_txt_write_path, \
+# 			mz_error, reporter_type, min_intensity, min_reporters, should_select)
+# 		if error:
+# 			print "bad bad bad"
+# 			return error, 500
+# 		else:
+# 			return "Looking good"
+# 	else:
+# 		return "Trouble determining whether to recalibrate, ask Sam", 500
 
 @app.route("/tab_3_function", methods=['POST'])
 def tab_3_function():

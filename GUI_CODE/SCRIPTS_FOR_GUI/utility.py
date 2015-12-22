@@ -19,24 +19,24 @@ def validate_ion_type(ion_type):
 
 
 
-def tests():
-	assert validate_float('-0.5')
-	assert not validate_float('--0.5')
-	assert not validate_float('-.')
-	assert not validate_float('-')
-	assert not validate_float('-2.a0')
-	assert validate_float('0.5')
-	assert validate_float('10.')
-	assert not validate_float('.5')
-	assert validate_int('123')
-	assert validate_int('-123')
-	assert not validate_int('--123')
-	assert not validate_int('123.5')
-	assert not validate_int('123a')
-	assert not validate_float('')
-	assert not validate_int('')
-	# Good, that actually helped me catch an error, well done sammy boy
+# def tests():
+# 	assert validate_float('-0.5')
+# 	assert not validate_float('--0.5')
+# 	assert not validate_float('-.')
+# 	assert not validate_float('-')
+# 	assert not validate_float('-2.a0')
+# 	assert validate_float('0.5')
+# 	assert validate_float('10.')
+# 	assert not validate_float('.5')
+# 	assert validate_int('123')
+# 	assert validate_int('-123')
+# 	assert not validate_int('--123')
+# 	assert not validate_int('123.5')
+# 	assert not validate_int('123a')
+# 	assert not validate_float('')
+# 	assert not validate_int('')
+# 	# Good, that actually helped me catch an error, well done sammy boy
 
 
-tests()
+# tests()
 
