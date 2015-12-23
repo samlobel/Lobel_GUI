@@ -23,6 +23,9 @@ my $min_reporters="";
 my $should_select="0";
 my $recal_mz_error="";
 
+my $reporter_largest="0";
+my $scaled_reporter_largest="0";
+
 
 if ($ARGV[0]=~/\w/) { $read_file_path=$ARGV[0];} else { exit 1;}
 if ($ARGV[1]=~/\w/) { $write_file_path=$ARGV[1];} else { exit 1;}
@@ -86,6 +89,7 @@ else
 	exit 1;
 }
 
+$reporter_largest = $reporters[-1];
 
 # my $count_all_spectra=0;
 # my $count_spectra=0;
@@ -249,6 +253,7 @@ while($line=<IN>)
 				for(my $i=0;$i<$points;$i++)
 				{
 					# if it's inside the original threshold:
+					# if ($mz[$i] > $reporter_largest+2){last;}
 					if (abs($reporter-$mz[$i])<$mz_error*$reporter/1e+6)
 					{
 						if ($max<$intensity[$i])
@@ -284,6 +289,7 @@ while($line=<IN>)
 				# print "@scaled_reporters\n";
 				# print "unscaled\n";
 				# print "@reporters\n";
+				$scaled_reporter_largest=$scaled_reporters[-1];
 				
 				my $recal_reporter_count=0;
 				my @recal_sum=();
@@ -296,6 +302,7 @@ while($line=<IN>)
 					$recal_sum[$recal_reporter_count]=0;
 					for(my $i=0;$i<$points;$i++)
 					{
+						# if ($mz[$i] > $scaled_reporter_largest+2){last;}
 						if (abs($scaled_reporter-$mz[$i])<$recal_mz_error*$scaled_reporter/1e+6)
 						{
 							$recal_sum+=$intensity[$i];
