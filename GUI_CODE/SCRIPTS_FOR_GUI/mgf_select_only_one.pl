@@ -22,6 +22,8 @@ my $min_intensity="";
 my $min_reporters="";
 my $should_select="0";
 
+my $reporter_largest="0";
+
 if ($ARGV[0]=~/\w/) { $read_file_path=$ARGV[0];} else { exit 1;}
 if ($ARGV[1]=~/\w/) { $write_file_path=$ARGV[1];} else { exit 1;}
 if ($ARGV[2]=~/\w/) { $write_txt_file_path=$ARGV[2];} else { exit 1;}
@@ -81,6 +83,8 @@ else
 	print "Error: Have not specified reporter ion properly\n";
 	exit 1;
 }
+
+$reporter_largest=$reporters[-1];
 
 
 # my $count_all_spectra=0;
@@ -236,6 +240,8 @@ if (open (IN, "$read_file_path"))
 						$reporter_intensity{"$reporter"}=0;
 						for(my $i=0;$i<$points;$i++)
 						{
+							# This works if the selected_mgf file is sorted, looks like it always is
+							# if ($mz[$i] > ($reporter_largest+2)){last;}
 							if (abs($reporter-$mz[$i])<$mz_error*$reporter/1e+6)
 							{
 								$sum+=$intensity[$i];

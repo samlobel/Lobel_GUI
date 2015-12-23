@@ -1,26 +1,37 @@
 <div>
-  <div style="float:left;width:70%" id="leftSide">
-    <h2 style="margin:1%">COMBINE MGF AND XML FILES</h2>
+  <div style="float:left;width:60%" id="leftSide">
+    <h2 style="margin:1%">PARSE XML FILE AND COMBINE WITH MGF</h2>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">Operation to perform</span>
       <select class='form-control' id="mgfOperationToPerform">
         <option value="1">Select reporter ions from mgf files</option>
         <option value="0">Use pre-extracted reporter ion (.mgf.txt) files</option>
       </select>
+      <span class="input-group-btn">
+        <button class="btn btn-info" onclick="alert('If you don\'t have the mgf.txt files you used for the GPM search, you can re-select them here.')">?</button>
+      </span>
     </div>
-    <!-- I'm not going to give the option to save the selected folders, they lost that right when they didn't do it the first time. -->
-    <div id="options_if_selecting" style="margin: 1%">
+    <div id="options_if_selecting">
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF DIRECTORY</span>
         <input type="text" class="form-control" id="mgfReadDirPath">
+        <span class="input-group-btn">
+          <button class="btn btn-info" onclick="alert('On windows, open windows explorer and navigate to your mgf directory. Clicking on your url bar will highlight the directory path, copy paste that into this text box')">?</button>
+        </span>
       </div>
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">Minimum Intensity per reporter</span>
         <input type="text" class="form-control" id="minIntensity" value="1000">
+        <span class="input-group-btn">
+          <button class="btn btn-info" onclick="alert('Part of the filtering process. For a reporter ion to be considered present in a given run, it must appear in total this many times')">?</button>
+        </span>
       </div>
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">Minimum Reporters with said intensity</span>
         <input type="text" class="form-control" id="minReporters" value="2">
+        <span class="input-group-btn">
+          <button class="btn btn-info" onclick="alert('Part of the filtering process. For a run to be selected as valid, this many runs must appear with at least the prescribed intensity')">?</button>
+        </span>
       </div>
 
       <br>
@@ -36,24 +47,37 @@
       <div id="options_if_recalibrating">
         <div class="input-group" style="margin: 1%">
           <span class="input-group-addon" id="basic-addon1">&nbspm/z error for initial runthrough (ppm, integer) &nbsp</span>
-          <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorInitialRun" value="20">
+          <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorInitialRun" value="20">
+          <span class="input-group-btn">
+            <button class="btn btn-info" onclick="alert('Error used to categorize spectral peaks in order to scale reporter ion target-masses to more accurate values. \n\nThe units of this number are millionths of a percent away from target mass. So, inputting 20 would mean that, for a reporter ion with m/z=100, anything with m/z between 99.998 and 100.002 would be classified as that ion')">?</button>
+          </span>
+
         </div>
         <div class="input-group" style="margin: 1%">
           <span class="input-group-addon" id="basic-addon1">&nbsp m/z error for recalibration  (ppm, integer, must be smaller than initial m/z error) &nbsp</span>
-          <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorRecalibration" value="5">
+          <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzErrorRecalibration" value="5">
+          <span class="input-group-btn">
+            <button class="btn btn-info" onclick="alert('Error used to categorize spectral peaks AFTER reporter ion masses have been recalibrated. \n\nThe units of this number are millionths of a percent away from target mass. So, inputting 5 would mean that, for a reporter ion with recalibrated m/z=100, anything with m/z between 99.9995 and 100.0005 would be classified as that ion')">?</button>
+          </span>
         </div>
       </div>
       <div id="options_if_not_recalibrating" style="display: none">
         <div class="input-group" style="margin: 1%">
           <span class="input-group-addon" id="basic-addon1">&nbspmz_error (ppm, integer) &nbsp</span>
-          <input type="number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzError" value="20">
+          <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="mzError" value="20">
+          <span class="input-group-btn">
+            <button class="btn btn-info" onclick="alert('Error used to categorize spectral peaks, based on hard-coded reporter ion masses. \n\nThe units of this number are millionths of a percent away from target mass. So, inputting 20 would mean that, for a reporter ion with recalibrated m/z=100, anything with m/z between 99.998 and 100.002 would be classified as that ion')">?</button>
+          </span>
         </div>
-      </div>      
+      </div>
     </div>
-    <div id="options_if_not_selecting"  style="display: none; margin: 1%">
+    <div id="options_if_not_selecting" style="display:none">
       <div class="input-group" style="margin: 1%">
         <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF.TXT DIRECTORY</span>
         <input type="text" class="form-control" id="mgfTxtReadDirPath">
+        <span class="input-group-btn">
+          <button class="btn btn-info" onclick="alert('On windows, open windows explorer and navigate to the folder that contains your mgf.txt files. Clicking on your url bar will highlight the directory path, copy paste that into this text box')">?</button>
+        </span>
       </div>
     </div>
 	  <!-- <div class="input-group" style="margin: 1%">
@@ -64,6 +88,9 @@
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">FULL PATH to XML FILE YOU WANT TO PARSE</span>
       <input type="text" class="form-control" id="xmlReadPath">
+      <span class="input-group-btn">
+        <button class="btn btn-info" onclick="alert('On windows, open windows explorer and navigate to the directory where your xml file is located. \n\nHold shift as you right click on the file, and then select from the menu that pops up \'copy as path\'. That copies the path to your clipboard. Paste that value into this text box, and remove the quotation marks.')">?</button>
+      </span>
     </div>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">GENE FILE</span>
@@ -74,6 +101,10 @@
           {% endfor %}
         {% endif %}
       </select>
+      <span class="input-group-btn">
+        <button class="btn btn-info" onclick="alert('This file is used to match proteins to specific runs.')">?</button>
+      </span>
+
     </div>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">REPORTER ION TYPE</span>
@@ -87,10 +118,11 @@
     </div>
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">Include proteins with peptide log(e)< </span>
-      <input type="text" class="form-control" id="logErrorThreshold" value="5">
+      <input type="text" class="form-control" id="logErrorThreshold" value="-2.0">
+      <span class="input-group-btn">
+        <button class="btn btn-info" onclick="alert('GPM outputs a log(e) match probability for each protein. This filters out proteins with higher error than the value given.')">?</button>
+      </span>
     </div>
-
-
     <br>
 
     <button id="tab_5_button" class="btn btn-primary">Click to submit Tab 5</button>
