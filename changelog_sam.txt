@@ -229,3 +229,6 @@ I could get a lot of milage using out of the fact that the mgf data is sorted by
 
 
 Looks like doing server-side regex is a bad idea, because it only gets it before the new input.
+
+The error it returns when there's already a directory is crazily unhelpful
+

@@ -12,6 +12,7 @@ from SCRIPTS_FOR_GUI import combine_xml_mgf
 import math
 from SCRIPTS_FOR_GUI import utility
 from SCRIPTS_FOR_GUI import validation
+from copy import copy
 # from science_code import science
 
 @app.route("/")
@@ -74,20 +75,21 @@ def combine_mgf_txt_files():
 
 @app.route("/tab_5_helper_function", methods=['POST'])
 def tab_5_helper_function():
-	valid, validation_error = validation.validate_tab_5(request)
+	valid, validation_error = validation.validate_tab_5(return_form_copy())
 
 	if not valid:
 		return validation_error, 500
 
 	xml_read_path = request.form['xmlReadPath']
-	threshold = request.form['threshold']
-	reporter_type = request.form['reporter_type']
+	log_error_threshold = request.form['logErrorThreshold']
+	reporter_type = request.form['reporterIonType']
 	geneFile = request.form['geneFile']
-	a = call_xml_parser.parse_xtandem(xml_read_path, threshold, labelMass, geneFile)
+	a = call_xml_parser.parse_xtandem_new(xml_read_path, log_error_threshold, reporter_type, geneFile)
 	
 	if a:
-		return "Error in parse-xml function", 500
-	return "Looks good"
+		return a, 500
+	else:
+		return "Looks good"
 
 
 
@@ -164,31 +166,44 @@ def tab_5_helper_function():
 
 @app.route("/tab_2_helper_function", methods=['POST'])
 def tab_2_helper_function():
-	valid, validation_error = validation.validate_tab_2(request.form)
+	print request.form
+	valid, validation_error = validation.validate_tab_2(request.form.copy())
+	print valid
+	print validation_error
 	if not valid:
+		print "not valid! error!"
 		print "Not valid, error is " + str(validation_error)
 		return validation_error, 500
-
+	else:
+		print "validation passed, this is being printed inside of tab_2_helper_function"
 	# Wow,  that's so much better.
 	# Now, to make the values.
 
 	# I'm pretty confident about this, so I'll move on for now.
 
-	mgf_read_dir_path = str(request.form['mgfReadDirPath'])
-	mgf_file_name = str(request.form['mgfFileName'])
-	reporter_type = str(request.form['reporterIonType'])
-	min_intensity = str(int(request.form['minIntensity']))
-	min_reporters = str(int(request.form['minReporters']))
+	mgf_read_dir_path = request.form['mgfReadDirPath']
+	mgf_file_name = request.form['mgfFileName']
+	reporter_type = request.form['reporterIonType']
+	min_intensity = request.form['minIntensity']
+	min_reporters = request.form['minReporters']
 
-	perform_recalibration = str(request.form['performRecalibration'])
-	should_select = str(request.form['mgfOperationToPerform'])
+	perform_recalibration = request.form['performRecalibration']
+	should_select = request.form['mgfOperationToPerform']
 
-	mz_error = str(int(request.form['mzError']))
+	mz_error = request.form['mzError']
 
-	mz_error_initial_run = str(int(request.form['mzErrorInitialRun']));
-	mz_error_recalibration = str(int(request.form['mzErrorRecalibration']));
+	mz_error_initial_run = request.form['mzErrorInitialRun'];
+	mz_error_recalibration = request.form['mzErrorRecalibration'];
 
 	#Now, to check/make directories 
+	print "accessed all of the variables"
+
+	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
+	mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
+	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+
+	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
 
 	try:
 		os.makedirs(mgf_txt_write_dir_path)
@@ -196,22 +211,23 @@ def tab_2_helper_function():
 		print "mgf.txt directory probably already there"
 	if not os.path.isdir(mgf_txt_write_dir_path):
 		return "selected_mgf_txt directory could not be created", 500
-	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
 
+	print "made a directory maybe"
 	if should_select == '1':
-		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
 		try:
 			os.makedirs(mgf_write_dir_path)
 		except:
 			print "mgf directory probably already there"
 		if not os.path.isdir(mgf_write_dir_path):
 			return "selected_mgf directory could not be created", 500	
-		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
 
 		# Still ugly, but that's because it's complicated
+	print "maybe made another"
+
 
 	if perform_recalibration == '1':
 		# pass
+		print "calling perform_recalibration from 1"
 		error = mgf_select_one.select_only_one_recalibrate(mgf_read_path, \
 			mgf_write_path, mgf_txt_write_path, mz_error_initial_run,\
 			reporter_type, min_intensity, min_reporters, should_select, \
@@ -223,6 +239,7 @@ def tab_2_helper_function():
 			return "mgf_select run with recalibration"
 
 	else:
+		print "calling perform_recalibration from 1"
 		# I can do this because I checked for both in validation
 		error = mgf_select_one.select_only_one(mgf_read_path, \
 			mgf_write_path, mgf_txt_write_path, mz_error, reporter_type, \
@@ -444,9 +461,17 @@ def validate_directory(dirname):
 # 	return (ion_type in possibilities)
 
 
+def return_form_copy():
+	to_return = {}
+	for key in request.form:
+		to_return[key] = request.form[key]
+	return to_return	
+
+
+
 
 
 if __name__ == "__main__":
-  app.run(processes=8)
+  app.run(processes=8, debug=True)
   # app.run()
 

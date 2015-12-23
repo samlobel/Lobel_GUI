@@ -23,7 +23,10 @@ def validate_gene_file(genefile):
 	this_dir = os.path.dirname(os.path.realpath(__file__))
 	genefile_fullpath = os.path.join(this_dir, 'gene_files', genefile)
 	return os.path.isfile(genefile_fullpath)
-	
+
+
+
+
 
 
 
