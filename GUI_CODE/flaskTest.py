@@ -472,6 +472,6 @@ def return_form_copy():
 
 
 if __name__ == "__main__":
-  app.run(processes=8, debug=True)
+  app.run(processes=8)
   # app.run()
 
