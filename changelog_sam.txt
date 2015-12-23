@@ -22,6 +22,15 @@ I'm going to change it so that you can put the script in a folder with the inver
 
 TO DO: I JUST MOVED EVERYTHING TO A FOLDER CALLED ISOBARIC_EXECUTABLES, NOW I NEED TO ADD THAT TO THE PATH.	
 
+I should write a serializeElement function, that serializes every input in an element.
+That wouldn't be too hard.
+
+
+
+
+
+Now, I need to make it so it writes them to separate files.
+
 
 
 TEST: for TMT0, run and see if the index stops, because it's from 126 to 126.
@@ -158,5 +167,68 @@ Make everything directory-agnostic.
 I also want to switch things to join from appending '/', because that's not very directory agnostic.
 
 
+Future change: I may want to increase parsing speed by getting rid of all double .* instances in a file. Also, I should precompile the regexes. That's probably a big thing. I should profile that.
 
+The regex is SO slow. That's crazy. Once you get to the points, you know you can skip everything else, until you're out of the points. But it doesn't do that, it matches every single regex over and over, and makes them as well instead of using precompiled ones.
+
+It's weird, it looks like out_cal only adjusts the mz of things to make them better, but doesn't change how the reporter-ion intensities are written. No out_cal_table. Does he want one? I think so.
+
+
+So, to sumarrize what I need to do:
+First, do the normal thing. But keep track of each and every peak, and where it happened, per run. Then, at the end of the run, you see how far off the highest peak is, you scale where the reporter ions should be, then you re-run selection, writing the table with amounts from the scaling and thinning of error threshold. And if the thing passes the test the second time, then you know it's okay.
+
+So, you run the thing, but instead of writing anything, you instead use the values to create a new mass array, and re-run it with that. But you've got to do that for every single run, not for the whole thing.
+
+1) Do the selection process on a single run
+2) Find the maximum peak
+3) Scale the values so that they match that one perfectly.
+4) Use those values to do the selection again
+5) If it matches the criteria, write the values, and the table.
+
+I think maybe I should have a totally separate perl script if you're reselecting, it's a big difference.
+
+I should put a check to make sure that the threshold value isn't so big that there's overlap, because overlap is really bad. It means that when you scale, there might be ambiguity in which one you scale in relation to. Things should only go in one pocket!
+
+Note that the min_intensity and min_reporters no longer applies to the first selection process if you're recalibrating, which means that we don't need the extra variables recal_min_intensity and recal_min_reporters.
+
+
+What should I do in the next train? I need to put in reasonable defaults. I also need to adjust the names so that they're understandable. But, more importantly, I need to have the python script route correctly. That shouldn't be a frontend thing, the frontend should just pass everything down.
+
+
+
+I need to test out four different things.
+First: should_select and recalibrate
+Second: not should_select and recalibrate
+Third: should_select and not_recalibrate
+Fourth: not should_select and not_recalibrate
+
+Forsome reason if I recalibrate then it makes the tsxt but if I don't it doesn't. Maybe SI need to change that one
+
+That's nice, it looks like recalibrating doesn't include THREE that not recalibrating does. That sounds like it's working to me.
+What if I change my range to be even smaller? Two?
+Also good is that selecting doesn't change the mgf_txt files
+
+Thinning it out actually doesn't make much difference, looks like dad has a nice instrument on his hands. Thinning to one makes a little bit more difference. And, as expected, zero makes it write nothing.
+
+Pretty validating, the recalibration makes a lot more of the runs match. How did I test it? I did a match with width 1, then I did a match with first width 20 and recal 1, and there were about twice as many caught with the second way than with the first
+
+So, I think that those two things are good. The next part I need to get working is the parse_xml. I remember talking about this. Sometimes you want to select the MGF 
+so that you can do a gpm search. And sometimes you want to combine the MGF and the xml file. But you never really want to just parse the XML file, that's not so useful.
+
+So sometimes you can give it a mgf.txt directory and a xml file and have it do the rest, and sometime you give it a mgf directory and an xml file and it'll parse the mgfs, and then combine everything. So, have a second tab where there's a file that gives
+
+Parse xml file:
+Option: use pre-extracted reporter ion mgf.txt files OR select from mgf file first.
+Options for pre-extract: All of the things you need for extraction.
+
+Once it's selected, I'll have a directory for the .mgf.txt files. Now, I need to run parse_xtandem_sam. 
+
+It'll be easiest to just start over.
+
+I could get a lot of milage using out of the fact that the mgf data is sorted by intensity.
+
+
+Looks like doing server-side regex is a bad idea, because it only gets it before the new input.
+
+The error it returns when there's already a directory is crazily unhelpful
 
