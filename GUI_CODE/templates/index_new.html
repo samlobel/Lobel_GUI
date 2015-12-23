@@ -14,16 +14,16 @@
 	      <ul class="nav navbar-nav">
 	        <!-- <li class="active" name="tab_link" id="tab_1"><a href="#">First Link</a></li> -->
 	        <li name="tab_link" id="tab_2" class="active"><a href="#">SELECT MGF</a></li>
-	        <li name="tab_link" id="tab_3"><a href="#">PARSE XML</a></li>
-	        <li name="tab_link" id="tab_4" class="active" ><a href="#">COMBINE MGF AND XML</a></li>
-	        <li name="tab_link" id="tab_5"><a href="#">Fourth Link</a></li>
+	        <!-- <li name="tab_link" id="tab_3"><a href="#">PARSE XML</a></li>
+	        <li name="tab_link" id="tab_4" class="active" ><a href="#">COMBINE MGF AND XML</a></li> -->
+	        <li name="tab_link" id="tab_5"><a href="#">PARSE XML</a></li>
 	      </ul>
 	    </div>
 	  </nav>
 	  <!-- <div id="tab_1" name="tab_body"></div> -->
 	  <div id="tab_2" name="tab_body"></div>
-	  <div id="tab_3" name="tab_body" style="display: none"></div>
-	  <div id="tab_4" name="tab_body" style="display: none"></div>
+	  <!-- <div id="tab_3" name="tab_body" style="display: none"></div>
+	  <div id="tab_4" name="tab_body" style="display: none"></div> -->
 	  <div id="tab_5" name="tab_body" style="display: none"></div>
 	  <script type="text/javascript">
 	  $('[name=tab_body]').each(function(index){
@@ -82,15 +82,8 @@
 	            return callback(null, result)
 	          },
 	          error: function(response, textStatus, HTTPError){
-	            callback("ERROR IN PASSING BACK FILE NAMES");
-	            if (textStatus){
-	              console.log(response);
-	              return alert("textStatus: " + textStatus);
-	            }
-	            if (HTTPError){
-	              console.log(response);
-	              return alert("HTTPError: " + HTTPError);
-	            }
+	            rightSide.append('<div style="color:red">' + response.responseText + '</div>')
+	            return callback("ERROR IN PASSING BACK FILE NAMES");
 	          }
 	        })
 	      },
@@ -150,7 +143,7 @@
 	      // }
 	      if (err){
 	      	console.log(err);
-	      	rightSide.append("<div style='color:red'>Error in selecting mgf: " + err + " <div>");
+	      	rightSide.append("<div style='color:red'>Error in selecting mgf!<div>");
 	      }
 	      var difference = new Date() - startTime;
 	      rightSide.append("<div>MILLISECONDS TAKEN: " + difference + " <div>")

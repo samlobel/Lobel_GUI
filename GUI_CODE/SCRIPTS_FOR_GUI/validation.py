@@ -46,6 +46,9 @@ def validate_tab_2(form):
 
 		print "endswithmgf"
 
+
+
+
 		if not validate_ion_type(reporter_type):
 			print "not a valid ion type"
 			return False, "not a valid ion type"
@@ -86,19 +89,41 @@ def validate_tab_2(form):
 
 		print "performrecal_1 checked"
 
-		if should_select != "0" and should_select != "1":
-			print "could not determine whether to select from mgf file, ask Sam"
-			return False, "could not determine whether to select from mgf file, ask Sam"
 
-		print "shouldselect checked"
 		# I'll make the directories later, this isn't the place for that. Or, maybe it is.
 		# Maybe I should make them somewhere else, and check here.
+
 
 		mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
 
 		if not os.path.isfile(mgf_read_path):
 			print "mgf path does not lead to file"
 			return False, "mgf_path does not lead to a file"
+
+		print "mgf_read_path checked"
+
+		mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
+		mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
+		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
+		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+
+
+		if should_select != "0" and should_select != "1":
+			print "could not determine whether to select from mgf file, ask Sam"
+			return False, "could not determine whether to select from mgf file, ask Sam"
+
+		print "shouldselect checked"
+
+		if should_select == "1":
+			if os.path.isfile(mgf_write_path):
+				print "path where we write selected mgf already has a file there"
+				return False, "path where we write selected mgf already has a file there"
+
+		if os.path.isfile(mgf_txt_write_path):
+			print "path where we write mgf.txt already has a file there"
+			return False, "path where we write mgf.txt already has a file there"
+
+
 
 		print "got through read path, returning true"
 		return True, None
