@@ -1,6 +1,7 @@
 from utility import *
 import os
 from os.path import join
+import makeFolderNames
 
 def validate_tab_2(form):
 	# print "bizarrely printing request"
@@ -102,12 +103,6 @@ def validate_tab_2(form):
 
 		print "mgf_read_path checked"
 
-		mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
-		mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
-		mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
-		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
-
-
 		if should_select != "0" and should_select != "1":
 			print "could not determine whether to select from mgf file, ask Sam"
 			return False, "could not determine whether to select from mgf file, ask Sam"
@@ -115,10 +110,14 @@ def validate_tab_2(form):
 		print "shouldselect checked"
 
 		if should_select == "1":
+			mgf_write_dir_path = makeFolderNames.construct_selected_mgf_path(form)
+			mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
 			if os.path.isfile(mgf_write_path):
 				print "path where we write selected mgf already has a file there"
 				return False, "path where we write selected mgf already has a file there"
 
+		mgf_txt_write_dir_path = makeFolderNames.construct_reporter_folder_path(form)
+		mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
 		if os.path.isfile(mgf_txt_write_path):
 			print "path where we write mgf.txt already has a file there"
 			return False, "path where we write mgf.txt already has a file there"
@@ -128,8 +127,10 @@ def validate_tab_2(form):
 		print "got through read path, returning true"
 		return True, None
 
-	except:
+	except Exception as e:
 		print "Missing form input"
+		print "Exception: "
+		print e
 		return False, "Missing form input"
 
 

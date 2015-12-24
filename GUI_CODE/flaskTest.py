@@ -14,6 +14,7 @@ from SCRIPTS_FOR_GUI import utility
 from SCRIPTS_FOR_GUI import validation
 from copy import copy
 # from science_code import science
+from SCRIPTS_FOR_GUI import makeFolderNames
 
 @app.route("/")
 def main():
@@ -87,7 +88,8 @@ def tab_5_helper_function():
 
 	if request.form['mgfOperationToPerform'] == '1':
 		print "Looks like we had to select from the mgf folder before this, that means I'll recalculate the mgf_foldername"
-		mgf_txt_foldername = join(request.form['mgfReadDirPath'], 'selected_mgf_txt', '')
+		# mgf_txt_foldername = join(request.form['mgfReadDirPath'], 'selected_mgf_txt', '')
+		mgf_txt_foldername = makeFolderNames.construct_reporter_folder_path(request.form)
 	else:
 		mgf_txt_foldername = request.form["mgfTxtReadDirPath"]
 
@@ -209,10 +211,15 @@ def tab_2_helper_function():
 	#Now, to check/make directories 
 	print "accessed all of the variables"
 
-	mgf_txt_write_dir_path = join(mgf_read_dir_path, 'selected_mgf_txt', '')
-	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')	
-	mgf_write_dir_path = join(mgf_read_dir_path, 'selected_mgf', '')
-	mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+	if should_select == "1":
+		mgf_write_dir_path = makeFolderNames.construct_selected_mgf_path(request.form)
+		mgf_write_path = join(mgf_write_dir_path, mgf_file_name)
+	else:
+		mgf_write_dir_path = "invalid"
+		mgf_write_path = "invalid"
+	mgf_txt_write_dir_path = makeFolderNames.construct_reporter_folder_path(request.form)
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
+
 
 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
 
