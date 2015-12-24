@@ -248,3 +248,7 @@ Make all tables write as xls
 
 Make CONFIGURE file, which has many things in it, including DEFAULT PORT NUMBER TO LOAD ON!
 
+Delete _duplicate_sorted.mgf.txt files.
+
+
+
