@@ -232,3 +232,5 @@ Looks like doing server-side regex is a bad idea, because it only gets it before
 
 The error it returns when there's already a directory is crazily unhelpful
 
+
+Make a better doc explaining everything
