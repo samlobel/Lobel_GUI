@@ -106,7 +106,7 @@ def parse_xtandem_combine_with_mgf(full_path_to_xml, error_threshold, reporter_t
 		print "from parse_xtandem_combine_with_mgf, error detected in parse_xtandem_new: " + str(resp)
 		return resp
 	print "stop here for now"
-	return 0
+	# return 0
 
 	xml_dir_name = xml_dirname_from_filename(full_path_to_xml)
 	resp_2 = combine_parsed_xml_mgf(selected_mgfdir, xml_dir_name, reporter_type)
@@ -117,6 +117,8 @@ def parse_xtandem_combine_with_mgf(full_path_to_xml, error_threshold, reporter_t
 	print "Looks good, cleaning up xml directory."
 	try:
 		shutil.rmtree(xml_dir_name)
+		xml_txt_filename = full_path_to_xml + '.txt'
+		os.remove(xml_txt_filename)
 		print "directory cleaned, well done"
 		return 0
 	except:

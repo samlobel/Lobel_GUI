@@ -586,13 +586,15 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 				xml = pd.read_table(xml_filename, index_col=['filename','scan','charge'])
 				mgf = pd.read_table(mgf_txt_filename, index_col=['filename','scan','charge'])
 				mgf.sort_index()
-				testing_filename = mgffilename.split('.mgf.txt')[0] + '_duplicate_sorted' + '.mgf.txt'
+				print "did initial work on them"
+				testing_filename = mgf_txt_filename.split('.mgf.txt')[0] + '_duplicate_sorted' + '.mgf.txt'
 				mgf.to_csv(testing_filename, sep='\t')
+				print "wrote one csv"
 				add_a_or_b_label_to_sorted_mfg_txt_file(testing_filename)
 				mgf = pd.read_table(testing_filename, index_col=['filename','scan','charge'])
 				dfc=pd.merge(mgf,xml, left_index=True, right_index=True)
 				dfc_=dfc.dropna()
-				csv_filename = join(xmldir, filename + '_nocal_' + str(mz_error) + '_table.txt')
+				csv_filename = join(xmldir, filename + '_nocal_table.txt')
 				print "Writing to " + str(csv_filename)
 				dfc_.to_csv(csv_filename,sep='\t')
 
@@ -615,10 +617,10 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 				data.to_csv(this_filename,sep='\t',index=False)
 
 		first=1
-		outfile_name = join(xmldir, 'MERGED_nocal_' + str(mz_error) + '_table.txt')
+		outfile_name = join(selected_mgfdir, 'GPM-pep-reporter-merged.txt')
 		with open(outfile_name, 'w') as outfile:
 			for filename in os.listdir(xmldir):
-				if filename.endswith('_nocal_' + str(mz_error) + '_table_corrected.txt'):
+				if filename.endswith('_nocal_table_corrected.txt'):
 					with open(join(xmldir, filename)) as infile:
 						for line in infile:
 							if (not 'other proteins' in line) or (first==1):
@@ -627,7 +629,9 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 		add_c_labels_to_duplicate_marker_column(outfile_name)
 		print "Done!"
 		return
-	except:
+	except Exception as err:
+		print "error"
+		print err
 		return "Error combining xml and mgf"
 
 
