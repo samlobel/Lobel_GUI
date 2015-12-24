@@ -579,7 +579,7 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 		print "about to loop files"
 		# Problem is that it's an empty folder!
 		for filename in os.listdir(xmldir):
-			if filename.endswith('.mgf.txt'):
+			if filename.endswith('.reporter'):
 				print filename
 				xml_filename = join(xmldir, filename)
 				mgf_txt_filename = join(selected_mgfdir, filename)
@@ -587,7 +587,7 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 				mgf = pd.read_table(mgf_txt_filename, index_col=['filename','scan','charge'])
 				mgf.sort_index()
 				print "did initial work on them"
-				testing_filename = mgf_txt_filename.split('.mgf.txt')[0] + '_duplicate_sorted' + '.mgf.txt'
+				testing_filename = mgf_txt_filename.split('.reporter')[0] + '_duplicate_sorted' + '.reporter'
 				mgf.to_csv(testing_filename, sep='\t')
 				print "wrote one csv"
 				add_a_or_b_label_to_sorted_mfg_txt_file(testing_filename)

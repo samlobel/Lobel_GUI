@@ -250,5 +250,7 @@ Make CONFIGURE file, which has many things in it, including DEFAULT PORT NUMBER 
 
 Delete _duplicate_sorted.mgf.txt files.
 
+Next on the agenda: Make .mgf.txt instead write to .reporter files
+
 
 

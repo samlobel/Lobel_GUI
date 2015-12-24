@@ -141,7 +141,7 @@ if ($should_select)
 
 unless (open (OUT_TABLE,">$write_txt_file_path"))
 {
-	print "Cannot write to .mgf.txt file\n";
+	print "Cannot write to .reporter file\n";
 	exit 1;
 }
 

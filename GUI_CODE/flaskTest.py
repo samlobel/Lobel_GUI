@@ -66,7 +66,7 @@ def combine_mgf_txt_files():
 	if not os.path.exists(merged_dir):
 		os.mkdir(merged_dir)
 
-	mgf_write_path = join(merged_dir, "MERGED.mgf.txt")
+	mgf_write_path = join(merged_dir, "MERGED.reporter")
 	error = combine_selected_mgf_files.concat_mgf_txt_files_given_dirname(mgf_write_path, mgf_read_path)
 	# return "GOOD JOB DOOD"
 	if error:

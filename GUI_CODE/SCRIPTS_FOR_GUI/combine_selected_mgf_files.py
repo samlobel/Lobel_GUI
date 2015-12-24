@@ -46,7 +46,7 @@ def concat_mgf_files_given_dirname(output_filename, input_directory_name):
 def concat_mgf_txt_files_given_dirname(output_filename, input_directory_name):
 	try:
 		filenames = [join(input_directory_name,f) for f in listdir(input_directory_name) if isfile(join(input_directory_name, f))]
-		filenames = [g for g in filenames if g.endswith(".mgf.txt")]
+		filenames = [g for g in filenames if g.endswith(".reporter")]
 		concat_mgf_txt_files(output_filename, filenames)
 	except:
 		return "Error concatting mgf_txt files in this directory"
