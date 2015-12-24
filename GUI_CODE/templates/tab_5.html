@@ -73,7 +73,7 @@
     </div>
     <div id="options_if_not_selecting" style="display:none">
       <div class="input-group" style="margin: 1%">
-        <span class="input-group-addon" id="basic-addon1">FULL PATH to MGF.TXT DIRECTORY</span>
+        <span class="input-group-addon" id="basic-addon1">FULL PATH to directory with pre-extracted reporter ions</span>
         <input type="text" class="form-control" id="mgfTxtReadDirPath">
         <span class="input-group-btn">
           <button class="btn btn-info" onclick="alert('On windows, open windows explorer and navigate to the folder that contains your mgf.txt files. Clicking on your url bar will highlight the directory path, copy paste that into this text box')">?</button>
@@ -102,7 +102,7 @@
         {% endif %}
       </select>
       <span class="input-group-btn">
-        <button class="btn btn-info" onclick="alert('This file is used to match proteins to specific runs.')">?</button>
+        <button class="btn btn-info" onclick="alert('This file is used to match spectra to specific runs.')">?</button>
       </span>
 
     </div>
@@ -117,10 +117,10 @@
       </select>
     </div>
     <div class="input-group" style="margin: 1%">
-      <span class="input-group-addon" id="basic-addon1">Include proteins with peptide log(e)< </span>
+      <span class="input-group-addon" id="basic-addon1">Include spectra with peptide log(e)< </span>
       <input type="text" class="form-control" id="logErrorThreshold" value="-2.0">
       <span class="input-group-btn">
-        <button class="btn btn-info" onclick="alert('GPM outputs a log(e) match probability for each protein. This filters out proteins with higher error than the value given.')">?</button>
+        <button class="btn btn-info" onclick="alert('GPM outputs a log(e) match probability for each spectra. This filters out spectra with higher error than the value given.')">?</button>
       </span>
     </div>
     <br>

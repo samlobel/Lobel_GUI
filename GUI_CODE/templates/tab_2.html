@@ -5,11 +5,11 @@
     <div class="input-group" style="margin: 1%">
       <span class="input-group-addon" id="basic-addon1">Operation to perform</span>
       <select class='form-control' id="mgfOperationToPerform">
-        <option value="1">Extract reporter ion intensities AND select viable runs</option>
-        <option value="0">Only Extract reporter ion intensities</option>
+        <option value="0">Only Extract reporter ion intensities (creates .mgf.txt files)</option>
+        <option value="1">Extract reporter ion intensities AND select viable spectra (creates .mgf.txt AND .mgf files)</option>
       </select>
       <span class="input-group-btn">
-        <button class="btn btn-info" onclick="alert('Selecting viable runs creates a series of mgf files filtered by whether a given run meet your minimum intensity and reporter count criteria')">?</button>
+        <button class="btn btn-info" onclick="alert('Selecting viable spectra creates a series of mgf files filtered by whether a given run meet your minimum intensity and reporter count criteria')">?</button>
       </span>
     </div>
 
