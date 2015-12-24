@@ -1,6 +1,7 @@
 import os
 from os.path import join
 import shutil
+from combine_xml_mgf import combine_parsed_xml_mgf 
 
 
 def parse_xtandem(full_path_to_xml, threshold, label_mass_int, genefile):
@@ -54,8 +55,9 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 	if not label_mass:
 		print "bad label mass returned"
 		return "reporter type not valid"
-	xml_dir_name = full_path_to_xml.partition('.xml')[0]
-	xml_dir_name = join(xml_dir_name, '')
+	# xml_dir_name = full_path_to_xml.partition('.xml')[0]
+	# xml_dir_name = join(xml_dir_name, '')
+	xml_dir_name = xml_dirname_from_filename(full_path_to_xml)
 	if os.path.isdir(xml_dir_name):
 		print "xml directory already exists here, if you don't need it anymore try deleting it and running again"
 		return "xml directory already exists here, if you don't need it anymore try deleting it and running again"
@@ -83,17 +85,55 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 	if a:
 		return "ERROR PARSING XML IN PERL SCRIPT"
 	else:
-		print "no error in perl script. Should delete the xml directory, because we don't need it anymore, just keep the xml.txt"
-		try:
-			shutil.rmtree(xml_dir_name)
-			return 0
-		except:
-			print "trouble deleting the directory afterwards."
-			return "Trouble deleting xml directory afterwards"
+		print "no error in perl script, all good."
+		return 0
+		# print "no error in perl script. Should delete the xml directory, because we don't need it anymore, just keep the xml.txt"
+		# try:
+		# 	shutil.rmtree(xml_dir_name)
+		# 	return 0
+		# except:
+		# 	print "trouble deleting the directory afterwards."
+		# 	return "Trouble deleting xml directory afterwards"
 			# This is safe because it'll only delete the directory that you create.
 			# But still, something to be careful about in the future, in case I forget
 			# and change something
 		# return 0
+
+
+def parse_xtandem_combine_with_mgf(full_path_to_xml, error_threshold, reporter_type, genefile, selected_mgfdir):
+	resp = parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile)
+	if resp:
+		print "from parse_xtandem_combine_with_mgf, error detected in parse_xtandem_new: " + str(resp)
+		return resp
+	print "stop here for now"
+	return 0
+
+	xml_dir_name = xml_dirname_from_filename(full_path_to_xml)
+	resp_2 = combine_parsed_xml_mgf(selected_mgfdir, xml_dir_name, reporter_type)
+	if resp_2:
+		print "from parse_xtandem_combine_with_mgf, error in combine_parsed_xml_mgf: " + str(resp_2)
+		return resp_2
+
+	print "Looks good, cleaning up xml directory."
+	try:
+		shutil.rmtree(xml_dir_name)
+		print "directory cleaned, well done"
+		return 0
+	except:
+		print "trouble deleting the directory afterwards."
+		return "Trouble deleting xml directory afterwards"
+
+	# return 0
+
+
+
+
+
+
+def xml_dirname_from_filename(full_path_to_xml):
+	almost_xml_dir_name = full_path_to_xml.partition('.xml')[0]
+	xml_dir_name = join(almost_xml_dir_name, '')
+	return xml_dir_name
 
 
 def convert_reporter_to_label_mass(reporter):

@@ -22,6 +22,8 @@ I'm going to change it so that you can put the script in a folder with the inver
 
 TO DO: I JUST MOVED EVERYTHING TO A FOLDER CALLED ISOBARIC_EXECUTABLES, NOW I NEED TO ADD THAT TO THE PATH.	
 
+
+
 I should write a serializeElement function, that serializes every input in an element.
 That wouldn't be too hard.
 
@@ -234,3 +236,15 @@ The error it returns when there's already a directory is crazily unhelpful
 
 
 Make a better doc explaining everything
+
+
+
+
+Make the pathname reflect the options. Make folder names reflect the options used to create them. 
+
+Make m/z non-integer.
+
+Make all tables write as xls
+
+Make CONFIGURE file, which has many things in it, including DEFAULT PORT NUMBER TO LOAD ON!
+

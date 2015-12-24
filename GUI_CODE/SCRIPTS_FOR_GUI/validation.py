@@ -134,6 +134,7 @@ def validate_tab_2(form):
 
 
 def validate_tab_5(form):
+	# There's a LOT more to do here.
 	print "validating tab_5"
 	try:
 		xml_read_path = form['xmlReadPath']
@@ -153,8 +154,8 @@ def validate_tab_5(form):
 			print "could not open xml file at that path"
 			return False, "could not open xml file at that path"
 
-		if not validate_float(log_error_threshold):
-			print "threshold must be a decimal"
+		if not validate_error_input(log_error_threshold):
+			print "threshold must be positive, and either a decimal or in scientific notation"
 			return False, "threshold must be a decimal"
 
 		if not validate_ion_type(reporter_type):

@@ -52,7 +52,7 @@ def timeit():
 	print "Time difference is " + str(time() - now)
 
 
-timeit() 
+# timeit() 
 # With the last skipping, it took 6.26912117004 seconds
 # Without it takes 9.67227983475. That's a 50% speedup! Or a 33% reduction!
 

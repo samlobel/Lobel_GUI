@@ -17,6 +17,9 @@ if ($ARGV[1]=~/\w/) { $xmldir=$ARGV[1];} else { exit 1; }
 if ($ARGV[2]=~/\w/) { $threshold=$ARGV[2];} else { exit 1; }
 if ($ARGV[3]=~/\w/) { $label_mass_int=$ARGV[3];} else { exit 1; }
 if ($ARGV[4]=~/\w/) { $genefile=$ARGV[4];} else { exit 1; }
+
+# $threshold=$threshold*1.0;
+
 if ($error==0)
 {
 	#$xmlfile=~s/\\/\//g;
@@ -45,8 +48,8 @@ if ($error==0)
 	open (IN,qq!$xmlfile!) || die "Could not open $xmlfile\n";
 	open (OUT,qq!>$xmlfile.txt!) || die "Could not open $xmlfile\n";
 	print OUT qq!filename\tscan\tcharge\tpre\tpeptide\tpost\tmodifications\tlabeling\tstart\tlog(e)\ttryptic\tmissed\tunacceptable modifications\tprotein\tgene\tgene_id\tprotein log(e)\tother proteins\tother genes\tother gene ids\tdifferent genes\tdifferent gene families\n!;
-	my $xmlfile_=$xmlfile;
-	$xmlfile_=~s/\.xml$//;
+	my $xmlfile_=$xmldir;
+	# $xmlfile_=~s/\.xml$//;
 	# mkdir($xmlfile_);
 	# system(qq!del $xmlfile_/*!);
 	my %filenames=();

@@ -84,8 +84,19 @@ def tab_5_helper_function():
 	log_error_threshold = request.form['logErrorThreshold']
 	reporter_type = request.form['reporterIonType']
 	geneFile = request.form['geneFile']
-	a = call_xml_parser.parse_xtandem_new(xml_read_path, log_error_threshold, reporter_type, geneFile)
+
+	if request.form['mgfOperationToPerform'] == '1':
+		print "Looks like we had to select from the mgf folder before this, that means I'll recalculate the mgf_foldername"
+		mgf_txt_foldername = join(request.form['mgfReadDirPath'], 'selected_mgf_txt', '')
+	else:
+		mgf_txt_foldername = request.form["mgfTxtReadDirPath"]
+
+
+
+	# a = call_xml_parser.parse_xtandem_new(xml_read_path, log_error_threshold, reporter_type, geneFile)
 	
+	a = call_xml_parser.parse_xtandem_combine_with_mgf(xml_read_path, log_error_threshold, reporter_type, geneFile, mgf_txt_foldername)
+
 	if a:
 		return a, 500
 	else:
@@ -97,34 +108,34 @@ def tab_5_helper_function():
 	# If it gets here, we assume that there are mgf.txt files in the
 	# right place. We should do a check anyways, but we can assume because
 	# of how we get here.
-	print "HANDLE TAB 5"
-	xml_read_path = str(request.form['xmlReadPath'])
-	# print xml_read_path
-	try:
-		threshold = int(request.form['threshold'])
-		threshold = str(round(threshold / 100.0, 2))
-	except ValueError:
-		print "bad threshold value"
-		return "ERROR: Bad Threshold Value", 500
+	# print "HANDLE TAB 5"
+	# xml_read_path = str(request.form['xmlReadPath'])
+	# # print xml_read_path
 	# try:
-	# labelMass = str(int(request.form['labelMass']))
+	# 	threshold = int(request.form['threshold'])
+	# 	threshold = str(round(threshold / 100.0, 2))
 	# except ValueError:
-	# 	print "bad labelMass value"
-	# 	return "ERROR: Bad Label Mass Value", 500
-	# print labelMass
-	reporter_type = str(request.form['reporter_type'])
-	utility.validate_ion_type(reporter_type)
+	# 	print "bad threshold value"
+	# 	return "ERROR: Bad Threshold Value", 500
+	# # try:
+	# # labelMass = str(int(request.form['labelMass']))
+	# # except ValueError:
+	# # 	print "bad labelMass value"
+	# # 	return "ERROR: Bad Label Mass Value", 500
+	# # print labelMass
+	# reporter_type = str(request.form['reporter_type'])
+	# utility.validate_ion_type(reporter_type)
 
-	geneFile = str(request.form['geneFile'])
-	a = call_xml_parser.parse_xtandem(xml_read_path, threshold, labelMass, geneFile)
-	to_return =  "Return from parse_xtandem: " + str(a)
-	if a:
-		return a, 500
-	print to_return
-	return to_return	
+	# geneFile = str(request.form['geneFile'])
+	# a = call_xml_parser.parse_xtandem(xml_read_path, threshold, labelMass, geneFile)
+	# to_return =  "Return from parse_xtandem: " + str(a)
+	# if a:
+	# 	return a, 500
+	# print to_return
+	# return to_return	
 
 
-	return "not yet implemented", 500
+	# return "not yet implemented", 500
 
 
 

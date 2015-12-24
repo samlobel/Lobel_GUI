@@ -536,6 +536,7 @@ def remove_log_e_duplicates(filename):
 def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 	try:
 		this_dir = os.path.dirname(os.path.realpath(__file__))
+		print "checking reporter ion type"
 		if reporter_ion_type=='iTRAQ4':
 			start_col=reporter_ion_type+'-114'
 			end_col=reporter_ion_type+'-117'
@@ -561,17 +562,22 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 			end_col=reporter_ion_type+'-131'
 			label_mass_int=229
 		else:
+			print "bad reporter ion type"
 			return "BAD REPORTER ION TYPE"
+		print "good reporter ion type"
 
 		corr_path = join(this_dir, "inverse_files", reporter_ion_type + "-inv.txt")
 		if not os.path.isfile(corr_path):
 			return "Cannot find inverse file"
+		print "reading pd table"
 		corr = pd.read_table(corr_path)
+		print "pd table read"
 		corr=corr.drop('Unnamed: 0', axis=1)
 		# xmldir,sep,ext = xmlfile.rpartition('.')
-
+		print "something dropped"
 		xmldir = join(xmldir,"")
-
+		print "about to loop files"
+		# Problem is that it's an empty folder!
 		for filename in os.listdir(xmldir):
 			if filename.endswith('.mgf.txt'):
 				print filename
