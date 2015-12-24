@@ -117,10 +117,10 @@
       </select>
     </div>
     <div class="input-group" style="margin: 1%">
-      <span class="input-group-addon" id="basic-addon1">Include spectra with peptide log(e)< </span>
-      <input type="text" class="form-control" id="logErrorThreshold" value="-2.0">
+      <span class="input-group-addon" id="basic-addon1">Include spectra peptide expectation <= </span>
+      <input type="text" class="form-control" id="logErrorThreshold" value="0.1">
       <span class="input-group-btn">
-        <button class="btn btn-info" onclick="alert('GPM outputs a log(e) match probability for each spectra. This filters out spectra with higher error than the value given.')">?</button>
+        <button class="btn btn-info" onclick="alert('GPM outputs an match probability for each spectra. This filters out spectra with higher error than the value given. Must be a number between 0 and 1, written in either decimal form or scientific notation (1.3e-5)')">?</button>
       </span>
     </div>
     <br>
@@ -239,8 +239,8 @@
           },
           error: function(response, textStatus, HTTPError){
             console.log(response.responseText);
-            rightSide.append('<div style="color:red">' + response + '</div>')
-            return callback("error: " + response)
+            rightSide.append('<div style="color:red">' + response.responseText + '</div>')
+            return callback("error: " + response.responseText)
           }
         })
       }
