@@ -1,0 +1,10 @@
+SelectedMGFSpectra_Min(Field1)(Field2)ions_MinIntensity(Field3)_MassError±(Field4)ppm
+SelectedReporters_Min(Field1)(Field2)ions_MinIntensity(Field3)_MassError±(Field4)ppm
+SelectedReporters_Min(Field1)(Field2)ions_MinIntensity(Field3)_InitialMassError±(Field4)ppm_RecalMassError±(Field5)
+
+Field1=minimum reporters with said intensity
+Field2= value from reporter type field
+Field3=Minimum Intensity per reporter
+Field4=m/z error for initial runthrough
+Field5=m/z error for initial runthrough
+
