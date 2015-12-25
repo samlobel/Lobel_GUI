@@ -2,41 +2,42 @@ import os
 from os.path import join
 import shutil
 from combine_xml_mgf import combine_parsed_xml_mgf 
+import utility
 
 
-def parse_xtandem(full_path_to_xml, threshold, label_mass_int, genefile):
-	this_dir = os.path.dirname(os.path.realpath(__file__))
+# def parse_xtandem(full_path_to_xml, threshold, label_mass_int, genefile):
+# 	this_dir = os.path.dirname(os.path.realpath(__file__))
 
-	full_path_to_genefile = join(this_dir, 'gene_files', genefile)
+# 	full_path_to_genefile = join(this_dir, 'gene_files', genefile)
 
-	# perl_call = "perl " + join(this_dir, 'parse_xtandem_lobel.pl') + ' '+\
-	# 	full_path_to_xml + ' ' + str(threshold) + ' ' + str(label_mass_int) + ' ' +\
-	# 	full_path_to_genefile
+# 	# perl_call = "perl " + join(this_dir, 'parse_xtandem_lobel.pl') + ' '+\
+# 	# 	full_path_to_xml + ' ' + str(threshold) + ' ' + str(label_mass_int) + ' ' +\
+# 	# 	full_path_to_genefile
 
-	# print perl_call
+# 	# print perl_call
 
-	if not os.path.isfile(full_path_to_xml):
-		print "XML ISN'T FILE"
-		return "XML ISN'T A FILE"
-	if not full_path_to_xml.endswith('.xml'):
-		print "XML FILENAME DOES NOT END WITH .xml"
-		return "XML FILENAME DOES NOT END WITH .xml"
-	if not os.path.isfile(full_path_to_genefile):
-		print "GENEFILE ISN'T FILE"
-		return "GENEFILE ISN'T FILE"
+# 	if not os.path.isfile(full_path_to_xml):
+# 		print "XML ISN'T FILE"
+# 		return "XML ISN'T A FILE"
+# 	if not full_path_to_xml.endswith('.xml'):
+# 		print "XML FILENAME DOES NOT END WITH .xml"
+# 		return "XML FILENAME DOES NOT END WITH .xml"
+# 	if not os.path.isfile(full_path_to_genefile):
+# 		print "GENEFILE ISN'T FILE"
+# 		return "GENEFILE ISN'T FILE"
 	
-	perl_call = "perl " + join(this_dir, 'parse_xtandem_sam.pl') + ' '+\
-		full_path_to_xml + ' ' + str(threshold) + ' ' + str(label_mass_int) + ' ' +\
-		full_path_to_genefile
-	print perl_call
-	a = os.system(perl_call)
-	if a:
-		return "ERROR PARSING XML IN PERL SCRIPT"
-	else:
-		return 0
+# 	perl_call = "perl " + join(this_dir, 'parse_xtandem_sam.pl') + ' '+\
+# 		full_path_to_xml + ' ' + str(threshold) + ' ' + str(label_mass_int) + ' ' +\
+# 		full_path_to_genefile
+# 	print perl_call
+# 	a = os.system(perl_call)
+# 	if a:
+# 		return "ERROR PARSING XML IN PERL SCRIPT"
+# 	else:
+# 		return 0
 
 
-def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile):
+def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile, unacceptable_mods):
 	this_dir = os.path.dirname(os.path.realpath(__file__))
 	full_path_to_genefile = join(this_dir, 'gene_files', genefile)
 	# if not os.path.isfile(full_path_to_xml):
@@ -50,6 +51,7 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 	# 	return "GENEFILE ISN'T FILE"
 
 	# going on the assumption it's been validated
+	mass_val_literal, mod_val_literal = utility.multiple_select_to_two_perl_string_literals(unacceptable_mods)
 
 	label_mass = convert_reporter_to_label_mass(reporter_type)
 	if not label_mass:
@@ -77,7 +79,8 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 
 	perl_call = "perl " + join(this_dir, 'parse_xtandem_sam.pl') + ' '+\
 		full_path_to_xml + ' ' + xml_dir_name + ' ' + str(error_threshold) + ' ' +\
-		str(label_mass) + ' ' + full_path_to_genefile
+		str(label_mass) + ' ' + full_path_to_genefile + ' "' + mass_val_literal + \
+		'" "' + mod_val_literal + '"'
 
 	print perl_call
 
@@ -100,7 +103,7 @@ def parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile
 		# return 0
 
 
-def parse_xtandem_combine_with_mgf(full_path_to_xml, error_threshold, reporter_type, genefile, selected_mgfdir):
+def parse_xtandem_combine_with_mgf(full_path_to_xml, error_threshold, reporter_type, genefile, selected_mgfdir, unacceptable_mods):
 	resp = parse_xtandem_new(full_path_to_xml, error_threshold, reporter_type, genefile)
 	if resp:
 		print "from parse_xtandem_combine_with_mgf, error detected in parse_xtandem_new: " + str(resp)

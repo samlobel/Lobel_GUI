@@ -12,11 +12,30 @@ my $threshold=0;
 my $proton_mass=1.007276;
 my $label_mass_int=0;
 my $genefile=0;
+my $unacceptable_mass_array_string="";
+my $unacceptable_mod_array_string="";
+my @unacceptable_mass_array=();
+my @unacceptable_mod_array=();
+
 if ($ARGV[0]=~/\w/) { $xmlfile=$ARGV[0];} else { exit 1; }
 if ($ARGV[1]=~/\w/) { $xmldir=$ARGV[1];} else { exit 1; }
 if ($ARGV[2]=~/\w/) { $threshold=$ARGV[2];} else { exit 1; }
 if ($ARGV[3]=~/\w/) { $label_mass_int=$ARGV[3];} else { exit 1; }
 if ($ARGV[4]=~/\w/) { $genefile=$ARGV[4];} else { exit 1; }
+if ($ARGV[5]=~/\w/) { $unacceptable_mass_array_string=$ARGV[5];} else { exit 1; }
+if ($ARGV[6]=~/\w/) { $unacceptable_mod_array_string=$ARGV[6];} else { exit 1; }
+
+@unacceptable_mass_array=split /,/,$unacceptable_mass_array_string;
+@unacceptable_mod_array=split /,/,$unacceptable_mod_array_string;
+
+my $length_of_unacceptable_mass=scalar @unacceptable_mass_array;
+my $length_of_unacceptable_mod=scalar @unacceptable_mod_array;
+
+unless ($length_of_unacceptable_mass == $length_of_unacceptable_mod)
+{
+	print "The two unacceptable mass and unacceptable mod arrays should have equal value, instead they have value $testing_scalar_length_mass and $testing_scalar_length_mod , respectively";
+	exit 1;
+}
 
 # $threshold=$threshold*1.0;
 
@@ -170,35 +189,57 @@ if ($error==0)
 							#if ($test_aa=~/^$mod_aa$/)
 							#{
 								$modifications.="$mod_mass\@$mod_aa$mod_pos_->$mod_pm,";
-								if ($mod_aa=~/^M$/ and int($mod_mass+0.5)==32)
+
+
+								my $current_unacc_mass="";
+								my $current_unacc_mod="";
+								for(my $mods=0;$mods<$points;$mods++)
 								{
-									$unacceptable="Y";
+									$current_unacc_mass=$unacceptable_mass_array[$mods];
+									$current_unacc_mod=$unacceptable_mod_array[$mods];
+									if ($mod_aa eq $current_unacc_mod and int((1000*$current_unacc_mass) + 0.5)==int((1000*$mod_mass) + 0.5))
+									{
+										$unacceptable="Y";
+										last;
+									}
 								}
-								if ($mod_aa=~/^W$/ and int($mod_mass+0.5)==32)
-								{
-									$unacceptable="Y";
-								}
-								if ($mod_aa=~/^W$/ and int($mod_mass+0.5)==16)
-								{
-									$unacceptable="Y";
-								}
-								if ($mod_aa=~/^Q$/ and int($mod_mass+0.5)==1)
-								{
-									$unacceptable="Y";
-								}
-								if ($mod_aa=~/^N$/ and int($mod_mass+0.5)==1)
-								{
-									$unacceptable="Y";
-								}
-								if ($mod_aa=~/^Y$/ and $mod_pos_!=1 and int($mod_mass+0.5)==$label_mass_int)
-								{
-									$unacceptable="Y";
-								}
-								if ($mod_aa=~/^Y$/ and $mod_pos_==1)
-								{
-									if (int($mod_mass+0.5)==$label_mass_int) { $labeled_Y_Nterm+=1; }
-									if (int($mod_mass+0.5)==2*$label_mass_int) { $labeled_Y_Nterm+=2; }
-								}
+
+
+
+
+
+								# if ($mod_aa=~/^M$/ and int($mod_mass+0.5)==32)
+								# {
+								# 	$unacceptable="Y";
+								# }
+								# if ($mod_aa=~/^W$/ and int($mod_mass+0.5)==32)
+								# {
+								# 	$unacceptable="Y";
+								# }
+								# if ($mod_aa=~/^W$/ and int($mod_mass+0.5)==16)
+								# {
+								# 	$unacceptable="Y";
+								# }
+								# if ($mod_aa=~/^Q$/ and int($mod_mass+0.5)==1)
+								# {
+								# 	$unacceptable="Y";
+								# }
+								# if ($mod_aa=~/^N$/ and int($mod_mass+0.5)==1)
+								# {
+								# 	$unacceptable="Y";
+								# }
+								# if ($mod_aa=~/^Y$/ and $mod_pos_!=1 and int($mod_mass+0.5)==$label_mass_int)
+								# {
+								# 	$unacceptable="Y";
+								# }
+								# if ($mod_aa=~/^Y$/ and $mod_pos_==1)
+								# {
+								# 	if (int($mod_mass+0.5)==$label_mass_int) { $labeled_Y_Nterm+=1; }
+								# 	if (int($mod_mass+0.5)==2*$label_mass_int) { $labeled_Y_Nterm+=2; }
+								# }
+
+
+
 							#}
 						}
 					}

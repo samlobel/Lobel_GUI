@@ -123,6 +123,47 @@
         <button class="btn btn-info" onclick="alert('GPM outputs an match probability for each spectra. This filters out spectra with higher error than the value given. Must be a number between 0 and 1, written in either decimal form or scientific notation (1.3e-5)')">?</button>
       </span>
     </div>
+    <div class="input-group" style="margin: 1%">
+      <span class="input-group-addon" id="basic-addon1">Operation to perform</span>
+      <select class='form-control' id="assignUnacceptableModifications">
+        <option value="0">Assign unacceptable modifications</option>
+        <option value="1">DO NOT assign unacceptable modifications</option>
+      </select>
+      <span class="input-group-btn">
+        <button class="btn btn-info" onclick="alert('Dunno what to say, that\'s for you dad')">?</button>
+      </span>
+    </div>
+    <div id="options_if_choosing_unacceptable_mods">
+      <div class="input-group" style="margin: 1%">
+        <span class="input-group-addon" id="basic-addon1">Unacceptable Modifications</span>
+        <select class='form-control' id="unacceptableMods" multiple="multiple">
+          <option value="15.994915@M">Oxidation (M)</option>
+          <option value="31.98983@M" selected>Dioxidation (M)</option>
+          <option value="15.994915@W" selected>Oxidation (W)</option>
+          <option value="31.98983@W" selected>Dioxidation (W)</option>
+          <option value="0.984016@N" selected>Deamidation (N)</option>
+          <option value="0.984016@Q" selected>Deamidation (Q)</option>
+          <option value="21.982@D,21.982@E">Cation:Na (E,D)</option>
+          <option value="37.955885@D,37.955885@E">Cation:K (E,D)</option>
+          <option value="15.994915@P">Hydroxy (P)</option>
+          <option value="79.966331@S">Phospho (S)</option>
+          <option value="79.966331@T">Phospho (T)</option>
+          <option value="79.966331@Y">Phospho (Y)</option>
+          <option value="79.956815@Y">Sulfo (Y)</option>
+          <option value="42.010565@K">Acetyl (K)</option>
+          <option value="43.989829@E">gamma-carboxyl (E)</option>
+          <option value="43.005814@[">Carbamyl (nt)</option>
+          <option value="43.005814@K">Carbamyl (K)</option>
+          <option value="57.021464@[">Carbamidomethyl (nt)</option>
+          <option value="57.021464@K">Carbamidomethyl (K)</option>
+          <option value="27.994915@K">formyl (K)</option>
+          <option value="27.994915@[">formyl (nt)</option>
+        </select>
+        <span class="input-group-btn">
+          <button class="btn btn-info" onclick="alert('On windows, select multiple by holding down ctrl. On mac, hold down command')">?</button>
+        </span>
+      </div>
+    </div>
     <br>
 
     <button id="tab_5_button" class="btn btn-primary">Click to submit</button>
@@ -150,6 +191,18 @@
     }
     else{
       alert("Something is funky, ask sam whats going on");
+    }
+  });
+  </script>
+  <script type="text/javascript">
+  $('div[id="tab_5"]').find("#assignUnacceptableModifications").change(function(e){
+    var val = e.target.value;
+    console.log("unnacceptablemodsvalue is " + val);
+    if (val == "0"){
+      $('div[id="tab_5"]').find("#options_if_choosing_unacceptable_mods").show();
+    }
+    else{
+      $('div[id="tab_5"]').find("#options_if_choosing_unacceptable_mods").hide(); 
     }
   });
   </script>

@@ -93,11 +93,17 @@ def tab_5_helper_function():
 	else:
 		mgf_txt_foldername = request.form["mgfTxtReadDirPath"]
 
+	should_use_unacceptable = request.form['assignUnacceptableModifications']
+	unacceptable_mods = request.form['unacceptableMods']
+	if should_use_unacceptable == "1":
+		unacceptable_mods = []
+
+
 
 
 	# a = call_xml_parser.parse_xtandem_new(xml_read_path, log_error_threshold, reporter_type, geneFile)
 	
-	a = call_xml_parser.parse_xtandem_combine_with_mgf(xml_read_path, log_error_threshold, reporter_type, geneFile, mgf_txt_foldername)
+	a = call_xml_parser.parse_xtandem_combine_with_mgf(xml_read_path, log_error_threshold, reporter_type, geneFile, mgf_txt_foldername, unacceptable_mods)
 
 	if a:
 		return a, 500
@@ -484,6 +490,16 @@ def return_form_copy():
 	for key in request.form:
 		to_return[key] = request.form[key]
 	return to_return	
+
+
+def multiple_select_to_two_arrays(unacceptable_mods):
+	long_string = ','.join(unacceptable_mods)
+	good_array = long_string.split(',')
+	two_d_array = [i.split('@') for i in good_array]
+	mass_val_arr = [j[0] for j in two_d_array]
+	mod_val_arr = [k[1] for j in two_d_array]
+	return mass_val_arr, mod_val_arr 
+
 
 
 

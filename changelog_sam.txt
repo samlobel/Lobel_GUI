@@ -253,4 +253,6 @@ Delete _duplicate_sorted.mgf.txt files.
 Next on the agenda: Make .mgf.txt instead write to .reporter files
 
 
+Round to 3 digits for unacceptable mods
+
 

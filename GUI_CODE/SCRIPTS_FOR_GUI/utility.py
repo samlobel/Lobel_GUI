@@ -32,6 +32,27 @@ def validate_error_input(error_input):
 	return (re.match(re_1, strnum) or re.match(re_2, strnum))
 
 
+def multiple_select_to_two_arrays(unacceptable_mods):
+	long_string = ','.join(unacceptable_mods)
+	good_array = long_string.split(',')
+	two_d_array = [i.split('@') for i in good_array]
+	mass_val_arr = [j[0] for j in two_d_array]
+	mod_val_arr = [k[1] for j in two_d_array]
+	return mass_val_arr, mod_val_arr
+
+def multiple_select_to_two_comma_separated_strings(unacceptable_mods):
+	if len(unacceptable_mods) == 0:
+		return "", ""
+
+	mass_val_arr, mod_val_arr = multiple_select_to_two_arrays(unacceptable_mods)
+	mass_val_literal = ', '.join(mass_val_arr)
+	mod_val_literal = ', '.join(mod_val_arr)
+	return mass_val_literal, mod_val_literal
+
+
+
+
+
 
 
 
