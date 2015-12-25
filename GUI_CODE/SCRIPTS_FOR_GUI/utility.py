@@ -50,6 +50,34 @@ def multiple_select_to_two_comma_separated_strings(unacceptable_mods):
 	return mass_val_literal, mod_val_literal
 
 
+def get_arrays_from_unacceptable_mod_form(unacceptable_mods):
+	TEXT_FOR_LABEL="ISOBARIC_LABEL"
+	if len(unacceptable_mods) == 0:
+		return "", "", ""
+
+	long_string = ','.join(unacceptable_mods)
+	good_array = long_string.split(',')
+
+	mod_masses,mod_labels,reporter_mod_labels= [],[],[]
+
+	for i in range(len(good_array)):
+		mod=good_array[i]
+		mod_mass, mod_name =mod.split("@")
+		if mod_mass==TEXT_FOR_LABEL:
+			reporter_mod_labels.append(mod_name)
+		else:
+			mod_masses.append(mod_mass)
+			mod_labels.append(mod_name)
+
+	return mod_masses,mod_labels,reporter_mod_labels
+
+def get_strings_from_unacceptable_mod_form(unacceptable_mods):
+	if len(unacceptable_mods) == 0:
+		return "", "", ""
+
+	mod_masses, mod_labels, reporter_mod_labels = get_arrays_from_unacceptable_mod_form(unacceptable_mods)
+	return ",".join(mod_masses), ",".join(mod_labels), ",".join(reporter_mod_labels)
+
 
 
 

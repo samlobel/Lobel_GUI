@@ -76,6 +76,7 @@ def combine_mgf_txt_files():
 
 @app.route("/tab_5_helper_function", methods=['POST'])
 def tab_5_helper_function():
+	print request.form
 	valid, validation_error = validation.validate_tab_5(return_form_copy())
 
 	if not valid:
@@ -86,6 +87,8 @@ def tab_5_helper_function():
 	reporter_type = request.form['reporterIonType']
 	geneFile = request.form['geneFile']
 
+	print "parsed form"
+
 	if request.form['mgfOperationToPerform'] == '1':
 		print "Looks like we had to select from the mgf folder before this, that means I'll recalculate the mgf_foldername"
 		# mgf_txt_foldername = join(request.form['mgfReadDirPath'], 'selected_mgf_txt', '')
@@ -93,15 +96,19 @@ def tab_5_helper_function():
 	else:
 		mgf_txt_foldername = request.form["mgfTxtReadDirPath"]
 
+	print "parsed form more"
+
+
 	should_use_unacceptable = request.form['assignUnacceptableModifications']
-	unacceptable_mods = request.form['unacceptableMods']
+	print "should_use_unacceptable: " + str(should_use_unacceptable)
+	unacceptable_mods = request.form.getlist('unacceptableMods[]')
+	print "unacceptable_mods: " + str(unacceptable_mods)
 	if should_use_unacceptable == "1":
 		unacceptable_mods = []
 
 
+	print "going to ball parse_xtandem stuff from tab 5" 
 
-
-	# a = call_xml_parser.parse_xtandem_new(xml_read_path, log_error_threshold, reporter_type, geneFile)
 	
 	a = call_xml_parser.parse_xtandem_combine_with_mgf(xml_read_path, log_error_threshold, reporter_type, geneFile, mgf_txt_foldername, unacceptable_mods)
 
@@ -224,7 +231,7 @@ def tab_2_helper_function():
 		mgf_write_dir_path = "invalid"
 		mgf_write_path = "invalid"
 	mgf_txt_write_dir_path = makeFolderNames.construct_reporter_folder_path(request.form)
-	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name + '.txt')
+	mgf_txt_write_path = join(mgf_txt_write_dir_path, mgf_file_name.split('.mgf')[0] + '.reporter')
 
 
 	mgf_read_path = join(mgf_read_dir_path, mgf_file_name)
@@ -506,7 +513,7 @@ def multiple_select_to_two_arrays(unacceptable_mods):
 
 
 if __name__ == "__main__":
-  app.run()
+  app.run(debug=True)
   # app.run(processes=8, debug=True)
   
   # app.run()

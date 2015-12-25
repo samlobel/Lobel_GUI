@@ -598,6 +598,8 @@ def combine_parsed_xml_mgf(selected_mgfdir, xmldir, reporter_ion_type):
 				print "Writing to " + str(csv_filename)
 				dfc_.to_csv(csv_filename,sep='\t')
 
+				os.remove(testing_filename)
+
 				data = pd.read_table(csv_filename)
 				for k in range(len(data)):
 					#print k,len(data),start_col,end_col,data

@@ -168,10 +168,12 @@ def validate_tab_5(form):
 			print "invalid gene file"
 			return False, "Invalid gene file"
 
+		print "looks good you"
 		return True, None
 
-	except:
+	except Exception as e:
 		print "Missing form input"
+		print "error: " + str(e)
 		return False, "Missing form input"
 
 

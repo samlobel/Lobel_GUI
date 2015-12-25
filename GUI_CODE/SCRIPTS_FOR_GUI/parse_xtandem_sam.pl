@@ -12,29 +12,36 @@ my $threshold=0;
 my $proton_mass=1.007276;
 my $label_mass_int=0;
 my $genefile=0;
+
 my $unacceptable_mass_array_string="";
 my $unacceptable_mod_array_string="";
+my $unacceptable_label_mod_string="";
+
 my @unacceptable_mass_array=();
 my @unacceptable_mod_array=();
+my @unacceptable_label_mod_array=();
 
-if ($ARGV[0]=~/\w/) { $xmlfile=$ARGV[0];} else { exit 1; }
-if ($ARGV[1]=~/\w/) { $xmldir=$ARGV[1];} else { exit 1; }
-if ($ARGV[2]=~/\w/) { $threshold=$ARGV[2];} else { exit 1; }
-if ($ARGV[3]=~/\w/) { $label_mass_int=$ARGV[3];} else { exit 1; }
-if ($ARGV[4]=~/\w/) { $genefile=$ARGV[4];} else { exit 1; }
-if ($ARGV[5]=~/\w/) { $unacceptable_mass_array_string=$ARGV[5];} else { exit 1; }
-if ($ARGV[6]=~/\w/) { $unacceptable_mod_array_string=$ARGV[6];} else { exit 1; }
+if (defined $ARGV[0]) { $xmlfile=$ARGV[0];} else { exit 1; }
+if (defined $ARGV[1]) { $xmldir=$ARGV[1];} else { exit 2; }
+if (defined $ARGV[2]) { $threshold=$ARGV[2];} else { exit 3; }
+if (defined $ARGV[3]) { $label_mass_int=$ARGV[3];} else { exit 4; }
+if (defined $ARGV[4]) { $genefile=$ARGV[4];} else { exit 5; }
+if (defined $ARGV[5]) { $unacceptable_mass_array_string=$ARGV[5];} else { exit 6; }
+if (defined $ARGV[6]) { $unacceptable_mod_array_string=$ARGV[6];} else { exit 7; }
+if (defined $ARGV[7]) { $unacceptable_label_mod_string=$ARGV[7];} else { exit 8; }
+
 
 @unacceptable_mass_array=split /,/,$unacceptable_mass_array_string;
 @unacceptable_mod_array=split /,/,$unacceptable_mod_array_string;
+@unacceptable_label_mod_array=split /,/,$unacceptable_mod_array_string;
 
 my $length_of_unacceptable_mass=scalar @unacceptable_mass_array;
 my $length_of_unacceptable_mod=scalar @unacceptable_mod_array;
 
 unless ($length_of_unacceptable_mass == $length_of_unacceptable_mod)
 {
-	print "The two unacceptable mass and unacceptable mod arrays should have equal value, instead they have value $testing_scalar_length_mass and $testing_scalar_length_mod , respectively";
-	exit 1;
+	print "The two unacceptable mass and unacceptable mod arrays should have equal value, instead they have value $length_of_unacceptable_mass and $length_of_unacceptable_mod , respectively";
+	exit 9;
 }
 
 # $threshold=$threshold*1.0;
@@ -61,7 +68,7 @@ if ($error==0)
 	}
 	else
 	{
-		exit 1;
+		exit 10;
 	}
 	#print qq!###$genes{"ENSRNOP00000019021"}###\n!;
 	open (IN,qq!$xmlfile!) || die "Could not open $xmlfile\n";
@@ -76,6 +83,8 @@ if ($error==0)
 	my $mz="";
 	my $charge="";
 	my $filename="";
+	my $f_name_sans_mgf="";
+	my @f_name_array_to_hold_stuff=();
 	my $scan="";
 	my $proteins="";
 	my $start="";
@@ -190,10 +199,9 @@ if ($error==0)
 							#{
 								$modifications.="$mod_mass\@$mod_aa$mod_pos_->$mod_pm,";
 
-
 								my $current_unacc_mass="";
 								my $current_unacc_mod="";
-								for(my $mods=0;$mods<$points;$mods++)
+								for(my $mods=0;$mods<$length_of_unacceptable_mod;$mods++)
 								{
 									$current_unacc_mass=$unacceptable_mass_array[$mods];
 									$current_unacc_mod=$unacceptable_mod_array[$mods];
@@ -203,11 +211,22 @@ if ($error==0)
 										last;
 									}
 								}
-
-
-
-
-
+								unless ($unacceptable eq "Y")
+								{
+									my $bad_label="";
+									foreach $bad_label (@unacceptable_label_mod_array) {
+										if ($mod_aa eq $bad_label and $mod_pos_!=1 and int($mod_mass+0.5)==$label_mass_int)
+										{
+											$unacceptable="Y";
+											last;
+										}
+										if ($mod_aa eq $bad_label and $mod_pos_==1)
+										{
+											if(int($mod_mass + 0.5)==$label_mass_int){$labeled_Y_Nterm+=1;}
+											if(int($mod_mass + 0.5)==2*$label_mass_int){$labeled_Y_Nterm+=2;}
+										}
+									}
+								}
 								# if ($mod_aa=~/^M$/ and int($mod_mass+0.5)==32)
 								# {
 								# 	$unacceptable="Y";
@@ -257,8 +276,11 @@ if ($error==0)
 			}
 			if($title=~/source=(.*\.mgf)/)
 			{
+				# 
 				$filename=$1;
 				$filename=~s/^.*[\/\\]([^\/\\]+)$/$1/;
+				@f_name_array_to_hold_stuff=split(".mgf",$filename);
+				$f_name_sans_mgf=$f_name_array_to_hold_stuff[0];
 			}
 		}
 		if($line=~/<GAML\:attribute type=\"M\+H\">(.*)<\/GAML\:attribute>/)
@@ -402,8 +424,9 @@ if ($error==0)
 				my $gene_id=$gene_ids{$protein_};
 				if ($gene_id!~/\w/) { $gene_id="None"; }
 				if ($other_gene_ids!~/\w/) { $other_gene_ids="None"; }
+
 				print OUT qq!$filename\t$scan\t$charge\t$pre\t$peptide\t$post\t$modifications\t$labeling\t$start\t$expect\t$tryptic\t$missed\t$unacceptable\t$protein_\t$gene\t$gene_id\t$protein_expect\t$protein_other\t$other_genes\t$other_gene_ids\t$different_genes\t$different_gene_fam\n!;
-				open (OUT_,qq!>>$xmlfile_/$filename.txt!) || die "Could not open $xmlfile_/$filename.txt\n";
+				open (OUT_,qq!>>$xmlfile_/$f_name_sans_mgf.reporter!) || die "Could not open $xmlfile_/$filename.reporter\n";
 				if ($filenames{$filename}!~/\w/)
 				{
 					$filenames{$filename}=1;
@@ -415,6 +438,7 @@ if ($error==0)
 			$mh="";
 			$mz="";
 			$filename="";
+			$f_name_sans_mgf="";
 			$charge="";
 			$scan="";
 			$proteins="";

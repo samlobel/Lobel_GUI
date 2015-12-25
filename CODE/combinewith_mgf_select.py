@@ -114,6 +114,7 @@ def add_c_labels_to_duplicate_marker_column(filename):
 	temp_file = open(temp_filename, "w")
 
 	first_line = a.readline()
+	print first_line
 	temp_file.write(first_line)
 	first_line_arr = first_line.split('\t')
 	filename_index = first_line_arr.index("filename")
