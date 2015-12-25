@@ -205,7 +205,7 @@ if ($error==0)
 								{
 									$current_unacc_mass=$unacceptable_mass_array[$mods];
 									$current_unacc_mod=$unacceptable_mod_array[$mods];
-									if ($mod_aa eq $current_unacc_mod and int((1000*$current_unacc_mass) + 0.5)==int((1000*$mod_mass) + 0.5))
+									if ($mod_aa eq $current_unacc_mod and int((1*$current_unacc_mass) + 0.5)==int((1*$mod_mass) + 0.5))
 									{
 										$unacceptable="Y";
 										last;
