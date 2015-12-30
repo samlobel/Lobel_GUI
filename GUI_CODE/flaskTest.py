@@ -16,6 +16,8 @@ from copy import copy
 # from science_code import science
 from SCRIPTS_FOR_GUI import makeFolderNames
 
+from cherrypy import wsgiserver
+
 @app.route("/")
 def main():
 	# print render_template('index.html')
@@ -513,7 +515,8 @@ def multiple_select_to_two_arrays(unacceptable_mods):
 
 
 if __name__ == "__main__":
-  app.run()
+  # app.run()
+  app.run(processes=8)
   # app.run(processes=8, debug=True)
   
   # app.run()
